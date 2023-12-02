@@ -1,0 +1,62 @@
+import random
+# from .chromosome import Chromosome
+import copy
+from .population import Population
+
+
+class RandomPart0Part2Sampler:
+    def __init__(self, bound, pop_size):
+        self.bound = bound
+        self.max_layers = bound.upper[0]
+        self.max_lens = 1 + self.max_layers + 5
+        self.pop_size = pop_size
+
+    def __call__(self, cfg):
+        pop_data = []
+        while len(pop_data) < self.pop_size:
+            nlayers = random.randint(self.bound.lower[0], self.bound.upper[0])
+            data = [nlayers] + [1]*self.max_layers
+            for lb, ub in zip(self.bound.lower[1:], self.bound.upper[1:]):
+                data.append(random.randint(lb, ub))
+            if data not in pop_data:
+                pop_data.append(data)
+
+        return Population.new(cfg, pop_data)
+
+
+class BruteForcePart0Part2Sampler:
+    def __init__(self, bound):
+        self.bound = bound
+        self.max_layers = bound.upper[0]
+        self.samples = []
+
+    def _generate(self, seq, i):
+        if i == len(seq):
+            sample = copy.deepcopy(seq)
+            sample = [sample[0]] + [1]*self.max_layers + sample[1:]
+            self.samples.append(sample)
+            return
+
+        for val in range(self.bound.lower[i], self.bound.upper[i]+1):
+            seq[i] = val
+            self._generate(seq, i+1)
+
+    def __call__(self, cfg):
+        print("Sampling")
+        self._generate(copy.deepcopy(self.bound.lower), 0)
+        print("Sample length", len(self.samples))
+        print(len(self.samples[0]))
+        return Population.new(cfg, self.samples)
+
+
+class SingleBlockSampler:
+    def __init__(
+        self,
+        bound,
+        expand_choices,
+        strides,
+        input_size
+    ):
+        self.bound = range(bound.lower, bound.upper+1)
+
+

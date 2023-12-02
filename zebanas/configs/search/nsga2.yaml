@@ -1,0 +1,73 @@
+model:
+  _target_: zebanas.spaces.model.Network
+  # _partial_: true
+  chromos: null
+  network_channels: [32, 16, 24, 40, 80, 112, 192, 360]
+  strides: [1, 2, 2, 2, 1, 2, 1]
+  dropout: 0.2
+  num_classes: 10
+  last_channels: 1440
+  width_mult: 1.0
+  depth_mult: 1.0  
+
+chromosome:
+  _target_: zebanas.genetic.chromosome.Chromosome
+  bound:
+    lower: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+    upper: [8, 6, 6, 6, 6, 6, 6, 6, 6, 11, 11, 1, 1, 1]
+    expand_choice: [1, 2, 4, 6]
+
+algorithm:
+  _target_: zebanas.algorithms.nsga2.NSGA2
+  n_generations: 20
+  pop_size: 100
+
+  sampler:
+    _target_: zebanas.genetic.samplers.RandomPart0Part2Sampler
+    bound:
+      lower: [1, 0, 0, 0, 0, 0]
+      upper: [8, 11, 11, 1, 1, 1]
+    pop_size: 2000
+
+  selection:
+    _target_: zebanas.genetic.selections.RankandCrowdingSelection
+
+  evaluator:
+    _target_: zebanas.evaluators.database.DatabaseQueryEvaluator
+    # loss_fn:
+    #   _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
+    obj_path: "logs/2023-11-22/checkpoints/table.pth"
+
+  crossover:
+    _target_: zebanas.genetic.crossovers.AverageSwapPart0Part2Crossover
+    px: 0.9
+    p_swap: 0.6
+
+  mutation:
+    _target_: zebanas.genetic.mutations.SumDivSwapPart0Part2Mutation
+    pm: 0.9
+    p_sum: 0.4
+    p_div: 0.4
+
+  survivor:
+    _target_: zebanas.genetic.survivors.RankandCrowdingSurvivor
+
+searcher:
+  _target_: zebanas.tasks.search.CellbyCellSearcher
+  n_cells: 7
+  select_func: 
+    _target_: zebanas.utils.selectors.KneeSelector
+  backward: true
+
+data:
+  _target_: zebanas.data.vision.cifar10.DataLoaderforSearchGetter
+  data_dir: "/home/haitt/workspaces/data/vision/cifar10"
+  batch_size: 2
+  n_batches: 2
+
+execute:
+  device: 'cuda'
+  start_step: 0
+  end_step: 1
+  sols_dir: "logs/2023-11-21/checkpoints"
+  save_interval: 5
