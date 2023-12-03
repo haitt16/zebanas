@@ -2,7 +2,6 @@ import numpy as np
 
 import torch.nn as nn
 from collections import defaultdict
-import time
 from tqdm import tqdm
 
 from hydra.utils import instantiate
@@ -79,6 +78,6 @@ class ZicoProxy:
                 dataloader,
                 cfg.execute.device
             )
-            objs.append([score, 0.0])
+            objs.append(score)
 
-        return samples.set_obj(np.array(objs))
+        return objs

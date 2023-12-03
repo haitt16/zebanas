@@ -28,9 +28,14 @@ algorithm:
       upper: [6, 11, 11, 1, 1, 1]
 
   evaluator:
-    _target_: zebanas.evaluators.zico.ZicoProxy
-    loss_fn:
-      _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
+    _target_: zebanas.evaluators.score_latency.ScoreAndLatencyEvaluator
+    score_evaluator:
+      _target_: zebanas.evaluators.zico.ZicoProxy
+      loss_fn:
+        _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
+    
+    latency_evaluator:
+      _target_: zebanas.evaluators.latency.CellLatencyEstimator
 
   survivor:
     _target_: zebanas.genetic.survivors.ParetoFrontSurvivor
