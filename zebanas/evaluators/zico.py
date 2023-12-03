@@ -40,31 +40,25 @@ class ZicoProxy:
             else:
                 score += np.log(tmpsum)
 
-        return score
+        return -score
 
     def get_zico(self, model, dataloader, device):
         grad_dict = defaultdict(list)
         model.train()
 
         model.to(device)
-        time_list = []
         for x, y in dataloader:
             model.zero_grad()
             x, y = x.to(device), y.to(device)
 
-            start0 = time.time()
             y_pred = model(x)
-            end0 = time.time()
             loss = self.loss_fn(y_pred, y)
 
-            start1 = time.time()
             loss.backward()
-            end1 = time.time()
 
             self.get_grad(grad_dict, model)
-            time_list.append(end1 + end0 - start1 - start0)
 
-        return self.calc_zico(grad_dict), np.mean(time_list)
+        return self.calc_zico(grad_dict)
 
     def __call__(
         self,
@@ -80,11 +74,11 @@ class ZicoProxy:
             chromosomes[search_index] = chromo
             model = instantiate(cfg.model, chromos=chromosomes)
 
-            score, time = self.get_zico(
+            score = self.get_zico(
                 model,
                 dataloader,
                 cfg.execute.device
             )
-            objs.append([-score, time])
+            objs.append([score, 0.0])
 
         return samples.set_obj(np.array(objs))

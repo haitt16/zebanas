@@ -43,13 +43,13 @@ searcher:
 
 data:
   _target_: zebanas.data.vision.cifar10.DataLoaderforSearchGetter
-  data_dir: "/home/haitt/workspaces/data/vision/cifar10"
+  data_dir: "database/cifar10"
   batch_size: 2
   n_batches: 2
 
 execute:
   device: 'cuda'
-  start_step: 1
-  end_step: 2
+  start_step: 0
+  end_step: 1
   sols_dir: "logs/2023-11-25-2/checkpoints"
   save_interval: 5

@@ -30,7 +30,7 @@ class DataLoaderforSearchGetter:
             transform=self.transforms(),
             download=True
         )
-        return dset
+        return dset[:self.batch_size*self.n_batches]
 
     def load(self):
         dloader = DataLoader(
@@ -39,9 +39,4 @@ class DataLoaderforSearchGetter:
             shuffle=True
         )
 
-        batches = []
-        for i, batch in enumerate(dloader):
-            if i < self.n_batches:
-                batches.append(batch)
-
-        return batches
+        return dloader
