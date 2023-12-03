@@ -18,10 +18,6 @@ def main(cfg):
 
     default_chromo = instantiate(cfg.chromosome, chromo=None)
     chromosomes = [default_chromo] * cfg.searcher.n_cells
-    # chromosomes = [default_chromo] * (cfg.searcher.n_cells-1)
-    # chromo1 = [5, 1, 1, 1, 1, 1, 1, 8, 9, 1, 1, 1]
-    # chromo1 = instantiate(cfg.chromosome, chromo=chromo1)
-    # chromosomes.append(chromo1)
     print("search")
     searcher.search(
         cfg=cfg,

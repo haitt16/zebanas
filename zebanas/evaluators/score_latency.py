@@ -16,11 +16,11 @@ class ScoreAndLatencyEvaluator:
         search_index
     ):
         scores = self.score_evaluator(
-            cfg,
-            samples,
-            dataloader,
-            chromosomes,
-            search_index
+            cfg=cfg,
+            samples=samples,
+            dataloader=dataloader,
+            chromosomes=chromosomes,
+            search_index=search_index
         )
         latencies = self.latency_evaluator(samples, search_index)
 

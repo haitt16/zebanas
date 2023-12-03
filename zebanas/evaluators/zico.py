@@ -68,7 +68,6 @@ class ZicoProxy:
         search_index
     ):
         objs = []
-
         for chromo in tqdm(samples, "Evaluating"):
             chromosomes[search_index] = chromo
             model = instantiate(cfg.model, chromos=chromosomes)
