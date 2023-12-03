@@ -5,7 +5,9 @@ class CellLatencyEstimator:
     def __init__(self, path="zebanas/evaluators/latency.pth"):
         self.data = torch.load(path)
 
-    def __call__(self, samples, search_idx):
+    def __call__(self, cfg, samples, search_idx):
+        if search_idx < 0:
+            search_idx = cfg.searcher.n_cells + search_idx
         objs = []
         for chromo in samples:
             latency = 0.

@@ -22,7 +22,7 @@ class ScoreAndLatencyEvaluator:
             chromosomes=chromosomes,
             search_index=search_index
         )
-        latencies = self.latency_evaluator(samples, search_index)
+        latencies = self.latency_evaluator(cfg, samples, search_index)
 
         objs = [[s, l] for s, l in zip(scores, latencies)]
 
