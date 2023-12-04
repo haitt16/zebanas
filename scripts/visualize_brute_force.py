@@ -9,7 +9,7 @@ from zebanas.genetic.population import Population
 from zebanas.genetic.utils import fast_non_dominated_sorting
 
 
-path = "/home/haitt/workspaces/codes/nas/zebanas/logs/2023-12-04/checkpoints"
+path = "/home/haitt/workspaces/codes/nas/zebanas/logs/2023-12-03/checkpoints"
 
 full_population = []
 for i in range(7):
@@ -29,6 +29,8 @@ fronts = fast_non_dominated_sorting(
 front_population = []
 for i in fronts:
     front_population.append(full_population[i])
+    if full_population[i].data[7] not in [0, 1, 2]:
+        print(full_population[i].data, full_population[i].obj)
 
 front_population = Population.create(front_population)
 front_population = front_population.reshape(-1)
