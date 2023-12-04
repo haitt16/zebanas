@@ -1,75 +1,62 @@
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import matplotlib.pyplot as plt
+import os
+import sys
 import torch
+import matplotlib.pyplot as plt
+import numpy as np
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from zebanas.genetic.population import Population
 from zebanas.genetic.utils import fast_non_dominated_sorting
-import numpy as np
-from kneed import KneeLocator
-path = "/home/haitt/workspaces/codes/nas/zebanas/logs/2023-11-25-1/checkpoints"
 
-populations = []
+
+path = "/home/haitt/workspaces/codes/nas/zebanas/logs/2023-12-03/checkpoints"
+
+full_population = []
 for i in range(7):
-    f = os.path.join(path, f"pop_chunk_{i}.pth")
-    pop = torch.load(f)
-    # print(pop)
-    populations.append(pop["pop"])
+    pop = torch.load(os.path.join(path, f"pop_chunk_{i}.pth"))
+    full_population.append(pop["pop"])
 
-full_pop = Population.merge(populations)
+full_population = Population.merge(full_population)
 
-table = {}
-for chromo in full_pop:
-    key = tuple(chromo.data)
-    table[key] = chromo.obj
+objs = full_population.get_obj()
 
-torch.save(table, "/home/haitt/workspaces/codes/nas/zebanas/logs/2023-11-22/checkpoints/table.pth")
-
-objs = full_pop.get_obj()
-# objs[:, 0] = -objs[:, 0]
-
-nobjs = objs.copy()
-nobjs = []
-for s, l in objs:
-    if l < 0.01 and s != 0:
-        nobjs.append([s, l])
-
-nobjs = np.array(nobjs)
-front = fast_non_dominated_sorting(
-    nobjs, n_stop_if_ranked=np.inf, return_rank0=True
+fronts = fast_non_dominated_sorting(
+    objs,
+    n_stop_if_ranked=len(full_population),
+    return_rank0=True
 )
 
-all_front = fast_non_dominated_sorting(
-    objs, n_stop_if_ranked=np.inf, return_rank0=True
-)
+front_population = []
+for i in fronts:
+    front_population.append(full_population[i])
 
-obj_front = nobjs[front]
-obj_front = sorted(obj_front, key=lambda x: x[0])
-obj_front = np.array(obj_front)
+front_population = Population.create(front_population)
+front_population = front_population.reshape(-1)
+front_objs = front_population.get_obj()
 
-mid = obj_front[0]/2 + obj_front[-1]/2
+mid_obj = np.mean(front_objs, axis=0)
 
-min_i = None
-min_val = 1e10
 
-for idx, p in enumerate(obj_front):
-    dis = np.sqrt(np.sum((p - mid)*(p - mid)))
-    if dis < min_val:
-        min_val = dis
-        min_i = idx
+dis_matrix = np.sum(np.power(front_objs - mid_obj, 2), axis=1)
+dis_matrix = np.sqrt(dis_matrix)
+min_idx = np.argmin(dis_matrix)
 
-mid_obj = obj_front[min_i]
-print(mid_obj)
-optimal_idx = np.where(objs == mid_obj)[0][0]
-print(optimal_idx)
-print(full_pop[optimal_idx].data)
-print(all_front)
+print(min_idx)
+print(front_population[min_idx].data)
 
-for fid in all_front:
-    print(full_pop[fid].data)
-    print(full_pop[fid].obj)
+# front_scores = front_objs[:, 0]
+# front_scores = (front_scores - np.min(front_scores)) / (np.max(front_scores) - np.min(front_scores))
+
+# front_latency = front_objs[:, 1]
+# front_latency = (front_latency - np.min(front_latency)) / (np.max(front_latency) - np.min(front_latency))
+
+# value = 0.7*front_scores + 0.3*front_latency
+# min_idx = np.argmin(value)
+# print(front_population[min_idx].data)
 
 plt.figure()
-# plt.scatter(nobjs[:, 0], nobjs[:, 1])
-plt.scatter(nobjs[:, 0], nobjs[:, 1])
-plt.scatter(obj_front[:, 0], obj_front[:, 1])
+plt.scatter(objs[:, 0], objs[:, 1])
+plt.scatter(objs[fronts, 0], objs[fronts, 1])
+plt.scatter(mid_obj[0], mid_obj[1])
+plt.scatter(front_objs[min_idx, 0], front_objs[min_idx, 1])
 plt.show()

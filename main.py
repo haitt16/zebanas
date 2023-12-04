@@ -17,7 +17,12 @@ def main(cfg):
     algorithm = instantiate(cfg.algorithm)
 
     default_chromo = instantiate(cfg.chromosome, chromo=None)
-    chromosomes = [default_chromo] * cfg.searcher.n_cells
+    chromosomes = [default_chromo] * (cfg.searcher.n_cells - 1)
+    chromo1 = instantiate(
+        cfg.chromosome,
+        chromo=[1, 1, 1, 1, 1, 1, 1, 9, 9, 1, 1, 1]
+    )
+    chromosomes = chromosomes + [chromo1]
     print("search")
     searcher.search(
         cfg=cfg,

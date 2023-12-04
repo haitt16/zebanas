@@ -54,7 +54,7 @@ data:
 
 execute:
   device: 'cuda'
-  start_step: 0
-  end_step: 1
-  sols_dir: "logs/2023-12-03/checkpoints"
+  start_step: 1
+  end_step: 2
+  sols_dir: "logs/2023-12-04/checkpoints"
   save_interval: 5
