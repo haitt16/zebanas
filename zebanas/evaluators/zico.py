@@ -10,9 +10,11 @@ from hydra.utils import instantiate
 class ZicoProxy:
     def __init__(
         self,
-        loss_fn
+        loss_fn,
+        repetitions
     ):
         self.loss_fn = loss_fn
+        self.repetitions = repetitions
 
     def get_grad(self, grad_dict, model):
         for name, module in model.named_modules():
@@ -71,12 +73,16 @@ class ZicoProxy:
         for chromo in tqdm(samples, "Evaluating"):
             chromosomes[search_index] = chromo
             model = instantiate(cfg.model, chromos=chromosomes)
+            scores = []
 
-            score = self.get_zico(
-                model,
-                dataloader,
-                cfg.execute.device
-            )
-            objs.append(score)
+            for _ in range(self.repetitions):
+                score = self.get_zico(
+                    model,
+                    dataloader,
+                    cfg.execute.device
+                )
+                scores.append(score)
+            avg_score = sum(scores) / self.repetitions
+            objs.append(avg_score)
 
         return objs

@@ -33,7 +33,7 @@ class BruteForcePart0Part2Sampler:
     def _generate(self, seq, i):
         if i == len(seq):
             sample = copy.deepcopy(seq)
-            sample = [sample[0]] + [1]*self.max_layers + sample[1:]
+            sample = [sample[0]] + [6]*self.max_layers + sample[1:]
             self.samples.append(sample)
             return
 
