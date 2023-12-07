@@ -28,7 +28,6 @@ class BruteForcePart0Part2Sampler:
     def __init__(self, bound):
         self.bound = bound
         self.max_layers = bound.upper[0]
-        self.samples = []
 
     def _generate(self, seq, i):
         if i == len(seq):
@@ -42,6 +41,7 @@ class BruteForcePart0Part2Sampler:
             self._generate(seq, i+1)
 
     def __call__(self, cfg):
+        self.samples = []
         print("Sampling")
         self._generate(copy.deepcopy(self.bound.lower), 0)
         print("Sample length", len(self.samples))

@@ -35,7 +35,7 @@ class BruteForce:
     ):
         population = self.sampler(cfg)
         population_chunks = self.chunk_population(population)
-        solutions = []
+        full_population = []
 
         for i, population in enumerate(tqdm(population_chunks, "Search")):
             population = self.evaluator(
@@ -47,14 +47,12 @@ class BruteForce:
             )
             torch.save(
                 {"pop": population},
-                os.path.join(cfg.execute.sols_dir, f"pop_chunk_{i}.pth")
+                os.path.join(
+                    cfg.execute.sols_dir,
+                    f"pop_chunk_{i}_{search_index}.pth")
             )
-            front = self.survivor(
-                population,
-                n_survive=self.pop_size
-            )
-            solutions.append(front)
+            full_population.append(population)
 
-        solutions = Population.merge(solutions)
-        solutions = self.survivor(solutions)
-        return solutions
+        full_population = Population.merge(full_population)
+        solution = self.survivor(full_population)
+        return solution

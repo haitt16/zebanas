@@ -13,25 +13,25 @@ model:
 chromosome:
   _target_: zebanas.genetic.chromosome.Chromosome
   bound:
-    lower: [1, 1, 1, 1, 1, 1, 1, 3, 0, 0, 1, 0]
+    lower: [1, 1, 1, 1, 1, 1, 1, 3, 1, 0, 0, 0]
     upper: [6, 6, 6, 6, 6, 6, 6, 11, 11, 0, 1, 0]
     expand_choice: [1, 2, 4, 6]
 
 algorithm:
   _target_: zebanas.algorithms.brute_force.BruteForce
-  pop_size: 1000
+  pop_size: 100
 
   sampler:
     _target_: zebanas.genetic.samplers.BruteForcePart0Part2Sampler
     bound:
-      lower: [1, 3, 0, 0, 1, 0]
+      lower: [1, 3, 1, 0, 0, 0]
       upper: [6, 11, 11, 0, 1, 0]
 
   evaluator:
     _target_: zebanas.evaluators.score_latency.ScoreAndLatencyEvaluator
     score_evaluator:
       _target_: zebanas.evaluators.zico.ZicoProxy
-      repetitions: 100
+      repetitions: 30
       loss_fn:
         _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
     
@@ -40,6 +40,7 @@ algorithm:
 
   survivor:
     _target_: zebanas.genetic.survivors.ParetoFrontSurvivor
+    alpha: 0.5
 
 searcher:
   _target_: zebanas.tasks.search.CellbyCellSearcher
@@ -56,6 +57,6 @@ data:
 execute:
   device: 'cuda'
   start_step: 0
-  end_step: 1
-  sols_dir: "logs/2023-12-05"
+  end_step: 7
+  sols_dir: "logs/2023-12-07"
   save_interval: 5

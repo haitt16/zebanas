@@ -126,6 +126,17 @@ class NoneOperation(nn.Module):
         nw = math.floor(((w-1)/self.stride) + 1)
         return torch.zeros(b, self.out_chn, nh, nw).to(x.device)
 
+# class NoneOperation(nn.Module):
+
+#     def __init__(self, out_chn, stride):
+#         super(NoneOperation, self).__init__()
+#         self.stride = stride
+
+#     def forward(self, x):
+#         if self.stride == 1:
+#             return x.mul(0.)
+#         return x[:, :, ::self.stride, ::self.stride].mul(0.)
+
 
 class OperationPool:
     def __init__(self, in_chn, out_chn, stride, index):

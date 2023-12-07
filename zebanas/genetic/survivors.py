@@ -38,10 +38,24 @@ class RankandCrowdingSurvivor:
 
 
 class ParetoFrontSurvivor:
-    def __call__(self, population, n_survive):
+    def __init__(self, alpha):
+        self.alpha = alpha
+
+    def __call__(self, population):
         F = population.get_obj()
 
         front = fast_non_dominated_sorting(
             F, n_stop_if_ranked=np.inf, return_rank0=True
         )
-        return population[front][:n_survive]
+
+        front_objs = F[front]
+        front_objs = front_objs[front_objs[:, 0].argsort()]
+        mid_obj = front_objs[0]*self.alpha + front_objs[-1]*(1 - self.alpha)
+        distance = np.sqrt(np.sum(np.power(front_objs - mid_obj, 2), axis=1))
+        min_idx = np.argmin(distance)
+
+        for i in front:
+            if np.all(np.array(population[i].obj) == front_objs[min_idx]):
+                solution = population[i]
+        print(solution.data, solution.obj)
+        return solution

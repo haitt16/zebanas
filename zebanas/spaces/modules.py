@@ -7,7 +7,8 @@ from .utils import _adjust_channels, adjust_depth
 class Connection(nn.Module):
     def __init__(self, *args):
         super().__init__()
-
+        if args[-1] == 0:
+            return None
         self.edge = OperationPool(*args)()
 
     def forward(self, x):
@@ -26,18 +27,19 @@ class Block(nn.Module):
         super().__init__()
 
         mid_chn = _adjust_channels(in_chn, expand_ratio)
+        self.op_ids = op_ids
 
-        self.block = nn.ModuleList([
-            Connection(in_chn, mid_chn, stride, op_ids[0]),
-            Connection(in_chn, mid_chn, stride, op_ids[2]),
-            Connection(in_chn, out_chn, stride, op_ids[3]),
-            Connection(mid_chn, out_chn, 1, op_ids[4]),
-            Connection(mid_chn, out_chn, 1, op_ids[1])
-        ])
+        self.block1 = Connection(in_chn, mid_chn, stride, op_ids[0])
+        self.block2 = Connection(in_chn, out_chn, stride, op_ids[3])
+        self.block3 = Connection(mid_chn, out_chn, 1, op_ids[1])
 
     def forward(self, x):
-        z = self.block[0](x) + self.block[1](x)
-        o = self.block[2](x) + self.block[3](z) + self.block[4](z)
+        z = self.block1(x)
+
+        if self.op_ids[3] != 0:
+            o = self.block2(x) + self.block3(z)
+        else:
+            o = self.block3(z)
         return o
 
 

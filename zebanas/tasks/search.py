@@ -27,18 +27,18 @@ class CellbyCellSearcher:
         self.search_ord = self.search_ord[start_step:end_step]
         print(self.search_ord)
         for index in self.search_ord:
-            solutions = algorithm.run(
+            solution = algorithm.run(
                 cfg=cfg,
                 dataloader=dataloader,
                 chromosomes=chromosomes,
                 search_index=index
             )
 
-            solution = self.select_func(solutions)
+            # solution = self.select_func(solutions)
             chromosomes[index] = solution
             solution_ckpt = {
                 "chromosomes": chromosomes,
-                "solutions": solutions
+                "solution": solution
             }
             torch.save(
                 solution_ckpt,
