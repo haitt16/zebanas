@@ -32,7 +32,7 @@ class BruteForcePart0Part2Sampler:
     def _generate(self, seq, i):
         if i == len(seq):
             sample = copy.deepcopy(seq)
-            sample = [sample[0]] + [6]*self.max_layers + sample[1:]
+            sample = [sample[0]] + [1]*self.max_layers + sample[1:]
             self.samples.append(sample)
             return
 
@@ -49,14 +49,41 @@ class BruteForcePart0Part2Sampler:
         return Population.new(cfg, self.samples)
 
 
-class SingleBlockSampler:
+class FullCellSampler:
     def __init__(
         self,
         bound,
-        expand_choices,
-        strides,
-        input_size
+        expand_choice
     ):
-        self.bound = range(bound.lower, bound.upper+1)
+        self.part02_sampler = BruteForcePart0Part2Sampler(bound)
+        self.expand_choice = expand_choice
 
+    def _generate_part1(self, seq, i, part1_samples):
+        if i == len(seq):
+            sample = copy.deepcopy(seq)
+            part1_samples.append(sample)
+            return
 
+        for val in self.expand_choice:
+            seq[i] = val
+            self._generate_part1(seq, i+1, part1_samples)
+
+    def __call__(self, cfg):
+        part02_samples = self.part02_sampler(cfg)
+        self.samples = []
+
+        for sample02 in part02_samples:
+            nlayers = sample02.nlayers
+            part1_samples = []
+
+            base_seq = [self.expand_choice[0]]*nlayers
+            self._generate_part1(copy.deepcopy(base_seq), 0, part1_samples)
+            sample = sample02.data
+            for sample1 in part1_samples:
+                sample[1:nlayers+1] = sample1
+                self.samples.append(copy.deepcopy(sample))
+
+        print(len(self.samples))
+
+        # return Population.new(cfg, self.samples)
+        return self.samples

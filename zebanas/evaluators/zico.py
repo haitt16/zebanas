@@ -61,6 +61,21 @@ class ZicoProxy:
 
         return self.calc_zico(grad_dict)
 
+    def get_zico_from_chromosomes(self, cfg, chromosomes, dataloader, device):
+        model = instantiate(cfg.model, chromos=chromosomes)
+        scores = []
+
+        for _ in range(self.repetitions):
+            score = self.get_zico(
+                model,
+                dataloader,
+                device
+            )
+            scores.append(score)
+        avg_score = sum(scores) / self.repetitions
+
+        return avg_score
+
     def __call__(
         self,
         cfg,

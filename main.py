@@ -1,7 +1,7 @@
 import os
 import hydra
 from hydra.utils import instantiate
-import time
+# import time
 
 @hydra.main(version_base=None, config_path="./zebanas/configs/search", config_name="brute_force")
 def main(cfg):
@@ -16,21 +16,42 @@ def main(cfg):
     searcher = instantiate(cfg.searcher)
     algorithm = instantiate(cfg.algorithm)
 
+    efficient_b0 = [
+        [1, 1, 1, 1, 1, 1, 1, 6, 2, 0, 1, 0],
+        [2, 6, 6, 1, 1, 1, 1, 6, 2, 0, 1, 0],
+        [2, 6, 6, 1, 1, 1, 1, 7, 2, 0, 1, 0],
+        [3, 6, 6, 6, 1, 1, 1, 6, 2, 0, 1, 0],
+        [3, 6, 6, 6, 1, 1, 1, 7, 2, 0, 1, 0],
+        [4, 6, 6, 6, 6, 1, 1, 7, 2, 0, 1, 0],
+        [1, 6, 1, 1, 1, 1, 1, 6, 2, 0, 1, 0]
+    ]
+
+    chromosomes_effb0 = []
+    for cell in efficient_b0:
+        chromo = instantiate(
+            cfg.chromosome,
+            chromo=cell
+        )
+        chromosomes_effb0.append(chromo)
+
+    zico = algorithm.score_evaluator.get_zico_from_chromosomes(
+        cfg,
+        chromosomes_effb0,
+        dataloader,
+        "cuda"
+    )
+    latency = algorithm.latency_evaluator.get_latency_from_chromosomes(
+        chromosomes_effb0
+    )
+    print("effb0", -zico, latency)
+
     default_chromo = instantiate(
         cfg.chromosome,
-        chromo=[2, 6, 6, 6, 6, 6, 6, 1, 1, 0, 1, 0])
+        chromo=[1, 2, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0])
     # [2, 6, 6, 6, 6, 6, 6, 5, 2, 0, 1, 0]
-    chromosomes = [default_chromo] * (cfg.searcher.n_cells - 2)
+    chromosomes = [default_chromo] * (cfg.searcher.n_cells)
 
-    chromo1 = instantiate(
-        cfg.chromosome,
-        chromo=[2, 6, 6, 6, 6, 6, 6, 6, 2, 0, 1, 0]
-    )
-    chromo2 = instantiate(
-        cfg.chromosome,
-        chromo=[2, 6, 6, 6, 6, 6, 6, 5, 2, 0, 1, 0]
-    )
-    chromosomes = chromosomes + [chromo2, chromo1]
+    # chromosomes = chromosomes + [chromo2, chromo1]
     print("search")
     searcher.search(
         cfg=cfg,
