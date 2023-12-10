@@ -33,7 +33,7 @@ algorithm:
 
   score_evaluator:
     _target_: zebanas.evaluators.zico.ZicoProxy
-    repetitions: 500
+    repetitions: 30
     loss_fn:
       _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
   
