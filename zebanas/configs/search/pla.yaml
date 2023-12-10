@@ -21,8 +21,8 @@ algorithm:
   _target_: zebanas.algorithms.pla.PruningLatencyAware
   pop_size: 50
   latency_bound:
-    upper: [0.6, 1.4, 1.4, 2.1, 2.1, 2.8, 0.8]
-    lower: [0.55, 1.35, 1.35, 2.05, 2.05, 2.75, 0.75]
+    upper: [0.6, 0.8, 1.3, 1.3, 2.0, 2.0, 3.0]
+    lower: [0.3, 0.5, 1.0, 1.0, 1.7, 1.7, 2.6]
 
   sampler:
     _target_: zebanas.genetic.samplers.FullCellSampler
@@ -42,7 +42,7 @@ algorithm:
     path: "zebanas/evaluators/latency_table.pth"
   
   complexity_evaluator:
-    _target_: zebanas.evaluators.flops.FLOPSCounter
+    _target_: zebanas.evaluators.params.ParamsCounter
 
   survivor:
     _target_: zebanas.genetic.survivors.ParetoFrontSurvivor
