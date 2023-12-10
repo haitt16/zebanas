@@ -21,14 +21,14 @@ algorithm:
   _target_: zebanas.algorithms.pla.PruningLatencyAware
   pop_size: 50
   latency_bound:
-    upper: [0.6, 1.4, 1.4, 2.1, 2.1, 2.8, 0.8]
-    lower: [0.5, 1.39, 1.39, 2.09, 2.09, 2.79, 0.75]
+    upper: [0.66, 1.46, 1.46, 2.15, 2.12, 2.82, 0.81]
+    lower: [0.65, 1.45, 1.45, 2.14, 2.11, 2.79, 0.8]
 
   sampler:
     _target_: zebanas.genetic.samplers.FullCellSampler
     bound:
       lower: [1, 3, 1, 0, 1, 0]
-      upper: [6, 11, 11, 0, 1, 0]
+      upper: [6, 11, 5, 0, 1, 0]
     expand_choice: ${chromosome.bound.expand_choice}
 
   score_evaluator:
