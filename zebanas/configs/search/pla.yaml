@@ -41,7 +41,7 @@ algorithm:
     _target_: zebanas.evaluators.latency.CellLatencyEstimator
     path: "zebanas/evaluators/latency_table.pth"
   
-  complatexity_evaluator:
+  complexity_evaluator:
     _target_: zebanas.evaluators.flops.FLOPSCounter
 
   survivor:
