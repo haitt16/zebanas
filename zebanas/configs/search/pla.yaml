@@ -22,7 +22,7 @@ algorithm:
   pop_size: 50
   latency_bound:
     upper: [0.6, 1.4, 1.4, 2.1, 2.1, 2.8, 0.8]
-    lower: [0.5, 1.3, 1.3, 2.0, 2.0, 2.75, 0.7]
+    lower: [0.59, 1.39, 1.39, 2.09, 2.09, 2.79, 0.79]
 
   sampler:
     _target_: zebanas.genetic.samplers.FullCellSampler
