@@ -48,7 +48,7 @@ def main(cfg):
     default_chromo = instantiate(
         cfg.chromosome,
         chromo=[1, 2, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0])
-    [2, 6, 6, 6, 6, 6, 6, 5, 2, 0, 1, 0]
+    # [2, 6, 6, 6, 6, 6, 6, 5, 2, 0, 1, 0]
     chromosomes = [default_chromo] * (cfg.searcher.n_cells)
 
     # chromosomes = chromosomes + [chromo2, chromo1]
