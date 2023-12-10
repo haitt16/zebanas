@@ -8,7 +8,7 @@ model:
   num_classes: 10
   last_channels: 1440
   width_mult: 1.0
-  depth_mult: 1.0  
+  depth_mult: 1.0
 
 chromosome:
   _target_: zebanas.genetic.chromosome.Chromosome

@@ -19,15 +19,15 @@ chromosome:
 
 algorithm:
   _target_: zebanas.algorithms.pla.PruningLatencyAware
-  pop_size: 100
+  pop_size: 50
   latency_bound:
-    upper: [0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4]
-    lower: [0.59, 0.89, 1.19, 1.49, 1.79, 2.09, 2.39]
+    upper: [0.6, 1.4, 1.4, 2.1, 2.1, 2.8, 0.8]
+    lower: [0.55, 1.35, 1.35, 2.05, 2.05, 2.75, 0.75]
 
   sampler:
     _target_: zebanas.genetic.samplers.FullCellSampler
     bound:
-      lower: [1, 3, 1, 0, 0, 0]
+      lower: [1, 3, 1, 0, 1, 0]
       upper: [6, 11, 11, 0, 1, 0]
     expand_choice: ${chromosome.bound.expand_choice}
 
@@ -40,6 +40,9 @@ algorithm:
   latency_evaluator:
     _target_: zebanas.evaluators.latency.CellLatencyEstimator
     path: "zebanas/evaluators/latency_table.pth"
+  
+  complexity_evaluator:
+    _target_: zebanas.evaluators.flops.FLOPSCounter
 
   survivor:
     _target_: zebanas.genetic.survivors.ParetoFrontSurvivor
@@ -49,7 +52,7 @@ searcher:
   _target_: zebanas.tasks.search.CellbyCellSearcher
   n_cells: 7
   select_func: null
-  backward: false
+  backward: true
 
 data:
   _target_: zebanas.data.vision.cifar10.DataLoaderforSearchGetter
@@ -61,5 +64,5 @@ execute:
   device: 'cuda'
   start_step: 0
   end_step: 7
-  sols_dir: "logs/2023-12-08"
+  sols_dir: "logs/2023-12-10"
   save_interval: 5

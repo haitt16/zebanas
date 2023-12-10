@@ -27,6 +27,7 @@ class CellLatencyEstimator:
         latency = 0.
         for idx, cell in enumerate(chromosomes):
             lat = self.get_latency(cell.data, idx)
+            print(lat)
             latency += lat
 
         return latency
