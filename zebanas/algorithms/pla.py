@@ -27,6 +27,8 @@ class PruningLatencyAware:
         self.survivor = survivor
         self.table = {}
 
+        print("Latency bound:", latency_bound)
+
     def chunk_population(self, population):
         chunks = []
         for i in range(0, len(population), self.pop_size):
