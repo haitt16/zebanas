@@ -21,8 +21,8 @@ algorithm:
   _target_: zebanas.algorithms.pla.PruningLatencyAware
   pop_size: 50
   latency_bound:
-    upper: [0.66, 1.46, 1.46, 2.15, 2.12, 2.82, 0.81]
-    lower: [0.65, 1.45, 1.45, 2.14, 2.11, 2.815, 0.8]
+    upper: [0.5, 1.3, 1.3, 2.0, 2.0, 2.7, 0.7]
+    lower: [0.4, 1.29, 1.29, 1.99, 1.99, 2.695, 0.6]
 
   sampler:
     _target_: zebanas.genetic.samplers.FullCellSampler
@@ -33,7 +33,7 @@ algorithm:
 
   score_evaluator:
     _target_: zebanas.evaluators.zico.ZicoProxy
-    repetitions: 30
+    repetitions: 500
     loss_fn:
       _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
   

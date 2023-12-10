@@ -65,7 +65,7 @@ class ZicoProxy:
         model = instantiate(cfg.model, chromos=chromosomes)
         scores = []
 
-        for _ in range(self.repetitions):
+        for _ in tqdm(range(self.repetitions)):
             score = self.get_zico(
                 model,
                 dataloader,
