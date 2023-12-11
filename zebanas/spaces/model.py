@@ -23,7 +23,7 @@ class Network(nn.Module):
         self.stem = Conv2dNormActivation(
             3, network_channels[0],
             kernel_size=3,
-            stride=2,
+            stride=strides[0],
             norm_layer=nn.BatchNorm2d,
             activation_layer=nn.SiLU
         )
@@ -34,7 +34,7 @@ class Network(nn.Module):
             chromo = chromos[i]
             in_channels = network_channels[i]
             out_channels = network_channels[i+1]
-            stride = strides[i]
+            stride = strides[i+1]
             cells.append(
                 Cell(
                     chromo, in_channels, out_channels, stride,

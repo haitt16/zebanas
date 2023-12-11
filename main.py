@@ -1,6 +1,8 @@
 import os
 import hydra
 from hydra.utils import instantiate
+# from fvcore.nn import FlopCountAnalysis
+
 # import time
 
 @hydra.main(version_base=None, config_path="./zebanas/configs/search", config_name="brute_force")
