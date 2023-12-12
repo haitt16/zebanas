@@ -9,6 +9,7 @@ class ParamsCounter:
     def __call__(
         self,
         cfg,
+        dataloader,
         samples,
         chromosomes,
         search_index

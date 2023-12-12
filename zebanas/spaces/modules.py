@@ -29,14 +29,21 @@ class Block(nn.Module):
         mid_chn = _adjust_channels(in_chn, expand_ratio)
         self.op_ids = op_ids
 
+        self.use_res = in_chn == out_chn and stride == 1
+
         self.block1 = Connection(in_chn, mid_chn, stride, op_ids[0])
-        self.block2 = Connection(in_chn, out_chn, stride, op_ids[3])
-        self.block3 = Connection(mid_chn, out_chn, 1, op_ids[1])
+        if not self.use_res:
+            block2 = None
+        else:
+            block2 = Connection(in_chn, out_chn, stride, op_ids[3])
+
+        self.block2 = block2
+        self.block3 = Connection(mid_chn, out_chn, 1, op_ids[1], expand_ratio)
 
     def forward(self, x):
         z = self.block1(x)
 
-        if self.op_ids[3] != 0:
+        if self.op_ids[3] != 0 and self.use_res:
             o = self.block2(x) + self.block3(z)
         else:
             o = self.block3(z)

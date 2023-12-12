@@ -15,14 +15,12 @@ class PruningLatencyAware:
         sampler,
         score_evaluator,
         latency_evaluator,
-        complexity_evaluator,
         survivor,
     ):
         self.pop_size = pop_size
         self.sampler = sampler
         self.score_evaluator = score_evaluator
         self.latency_evaluator = latency_evaluator
-        self.complexity_evaluator = complexity_evaluator
         self.latency_bound = latency_bound
         self.survivor = survivor
         self.table = {}
@@ -64,19 +62,7 @@ class PruningLatencyAware:
 
         print("After selected samples", len(selected_samples))
 
-        # sindex = np.argsort(latency_list)[-self.pop_size*5:]
-        # selected_samples = np.array(selected_samples)[sindex]
         population = Population.new(cfg, selected_samples)
-
-        # cscores = self.complexity_evaluator(
-        #     cfg=cfg,
-        #     samples=population,
-        #     chromosomes=chromosomes,
-        #     search_index=search_index
-        # )
-
-        # flops_indexes = np.argsort(cscores)[-self.pop_size:]
-        # population = population[flops_indexes]
 
         objs = self.score_evaluator(
             cfg=cfg,

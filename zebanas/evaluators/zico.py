@@ -5,6 +5,7 @@ from collections import defaultdict
 from tqdm import tqdm
 
 from hydra.utils import instantiate
+import time
 
 
 class ZicoProxy:
@@ -62,8 +63,10 @@ class ZicoProxy:
         return self.calc_zico(grad_dict)
 
     def get_zico_from_chromosomes(self, cfg, chromosomes, dataloader, device):
+
         model = instantiate(cfg.model, chromos=chromosomes)
         scores = []
+        print("Params", sum(p.numel() for p in model.parameters() if p.requires_grad))
 
         for _ in tqdm(range(self.repetitions)):
             score = self.get_zico(
@@ -85,11 +88,19 @@ class ZicoProxy:
         search_index
     ):
         objs = []
+        print(chromosomes)
         for chromo in tqdm(samples, "Evaluating"):
             chromosomes[search_index] = chromo
-            model = instantiate(cfg.model, chromos=chromosomes)
-            scores = []
 
+            start = time.time()
+            model = instantiate(cfg.model, chromos=chromosomes)
+            end = time.time()
+
+            print("init model:", end - start)
+            scores = []
+            print(sum(p.numel() for p in model.parameters() if p.requires_grad))
+
+            start = time.time()
             for _ in range(self.repetitions):
                 score = self.get_zico(
                     model,
@@ -98,6 +109,8 @@ class ZicoProxy:
                 )
                 scores.append(score)
             avg_score = sum(scores) / self.repetitions
+            end = time.time()
+            print("calculate zico:", end - start)
             objs.append(avg_score)
 
         return objs

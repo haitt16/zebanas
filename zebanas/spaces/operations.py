@@ -73,11 +73,11 @@ class GhostOperation(nn.Module):
 
 
 class SqueezeExcitationOperation(nn.Module):
-    def __init__(self, in_chn, out_chn, stride):
+    def __init__(self, in_chn, out_chn, stride, expand_ratio):
         super().__init__()
-
         layers = []
-        squeeze_chn = max(1, in_chn // 4)
+
+        squeeze_chn = max(1, in_chn // 4 // expand_ratio)
 
         layers.append(
             SqueezeExcitation(
@@ -126,36 +126,36 @@ class NoneOperation(nn.Module):
         nw = math.floor(((w-1)/self.stride) + 1)
         return torch.zeros(b, self.out_chn, nh, nw).to(x.device)
 
-# class NoneOperation(nn.Module):
 
-#     def __init__(self, out_chn, stride):
-#         super(NoneOperation, self).__init__()
-#         self.stride = stride
-
-#     def forward(self, x):
-#         if self.stride == 1:
-#             return x.mul(0.)
-#         return x[:, :, ::self.stride, ::self.stride].mul(0.)
+OPERATIONS_CLASSES = [
+    # op_class, k
+    (NoneOperation, None),
+    (IdentityOperation, None),
+    (SqueezeExcitationOperation, None),
+    (GhostOperation, 3),
+    (GhostOperation, 5),
+    (GhostOperation, 7),
+    (DepthwiseOperation, 3),
+    (DepthwiseOperation, 5),
+    (DepthwiseOperation, 7),
+    (ConvolutionOperation, 3),
+    (ConvolutionOperation, 5),
+    (ConvolutionOperation, 7),
+]
 
 
 class OperationPool:
-    def __init__(self, in_chn, out_chn, stride, index):
-        pool = [
-            NoneOperation(out_chn, stride),
-            IdentityOperation(in_chn, out_chn, stride),
-            SqueezeExcitationOperation(in_chn, out_chn, stride),
-            # GhostOperation(in_chn, out_chn, 3, stride),
-            # GhostOperation(in_chn, out_chn, 5, stride),
-            # GhostOperation(in_chn, out_chn, 7, stride),
-            DepthwiseOperation(in_chn, out_chn, 3, stride),
-            DepthwiseOperation(in_chn, out_chn, 5, stride),
-            DepthwiseOperation(in_chn, out_chn, 7, stride),
-            ConvolutionOperation(in_chn, out_chn, 3, stride),
-            ConvolutionOperation(in_chn, out_chn, 5, stride),
-            ConvolutionOperation(in_chn, out_chn, 7, stride),
-        ]
+    def __init__(self, in_chn, out_chn, stride, index, expand_ratio=0):
+        op_class, k = OPERATIONS_CLASSES[index]
 
-        self.op = pool[index]
+        if index >= 3:
+            self.op = op_class(in_chn, out_chn, k, stride)
+        elif index == 0:
+            self.op = op_class(out_chn, stride)
+        elif index == 1:
+            self.op = op_class(in_chn, out_chn, stride)
+        elif index == 2:
+            self.op = op_class(in_chn, out_chn, stride, expand_ratio)
 
     def __call__(self):
         return self.op

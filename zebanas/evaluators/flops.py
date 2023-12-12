@@ -6,6 +6,9 @@ from hydra.utils import instantiate
 
 
 class FLOPSCounter:
+    def __init__(self, image_size):
+        self.image_size = image_size
+
     def __call__(
         self,
         cfg,
@@ -14,7 +17,7 @@ class FLOPSCounter:
         search_index
     ):
         flops_list = []
-        dummy_input = torch.rand(1, 3, 224, 224)
+        dummy_input = torch.rand(1, 3, self.image_size, self.image_size)
 
         dummy_input = dummy_input.to(cfg.execute.device)
         for chromo in tqdm(samples, "FLOPS"):

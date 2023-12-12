@@ -81,6 +81,7 @@ class FullCellSampler:
             sample = sample02.data
             for sample1 in part1_samples:
                 sample[1:nlayers+1] = sample1
+
                 self.samples.append(copy.deepcopy(sample))
 
         print(len(self.samples))

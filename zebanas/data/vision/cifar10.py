@@ -4,10 +4,19 @@ import torchvision.transforms as T
 
 
 class DataLoaderforSearchGetter:
-    def __init__(self, data_dir, batch_size, n_batches):
+    def __init__(
+        self,
+        data_dir,
+        batch_size,
+        image_size,
+        crop_size,
+        n_batches
+    ):
         self.data_dir = data_dir
         self.n_batches = n_batches
         self.batch_size = batch_size
+        self.image_size = image_size
+        self.crop_size = crop_size
 
     def transforms(self):
         mean = [x / 255 for x in [125.3, 123.0, 113.9]]
@@ -15,8 +24,10 @@ class DataLoaderforSearchGetter:
 
         transform = T.Compose([
             T.RandomHorizontalFlip(p=0.5),
-            T.Resize(256, interpolation=T.InterpolationMode.BICUBIC),
-            T.RandomCrop(224),
+            T.Resize(
+                self.image_size,
+                interpolation=T.InterpolationMode.BICUBIC),
+            T.RandomCrop(self.crop_size),
             T.ToTensor(),
             T.Normalize(mean, std),
         ])
