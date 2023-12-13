@@ -7,7 +7,7 @@ class CellbyCellSearcher:
         self.n_cells = n_cells
 
         if backward:
-            self.search_ord = map(lambda x: -x, range(1, n_cells+1))
+            self.search_ord = map(lambda x: n_cells-x, range(1, n_cells+1))
         else:
             self.search_ord = range(n_cells)
 

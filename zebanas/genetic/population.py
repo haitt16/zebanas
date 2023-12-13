@@ -24,8 +24,8 @@ class Population(np.ndarray):
         return self
 
     @classmethod
-    def create(cls, *args):
-        return Population.__new__(cls, args)
+    def create(cls, chromos):
+        return Population.__new__(cls, chromos)
 
     @classmethod
     def merge(cls, pop_list):

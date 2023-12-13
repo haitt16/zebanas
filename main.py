@@ -43,15 +43,20 @@ def main(cfg):
         dataloader,
         "cuda"
     )
-    latency = algorithm.latency_evaluator.get_latency_from_chromosomes(
-        chromosomes_effb0
+    latency = algorithm.latency_evaluator(
+        [c.data for c in chromosomes_effb0]
     )
     print("effb0", -zico, latency)
 
     default_chromo = instantiate(
         cfg.chromosome,
-        chromo=[1, 2, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0])
+        chromo=[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0])
     chromosomes = [default_chromo] * (cfg.searcher.n_cells)
+
+    latency = algorithm.latency_evaluator(
+        [c.data for c in chromosomes]
+    )
+    print("default latency", latency)
 
     # chromosomes = chromosomes + [chromo2, chromo1]
     print("search")

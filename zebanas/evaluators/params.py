@@ -9,7 +9,6 @@ class ParamsCounter:
     def __call__(
         self,
         cfg,
-        dataloader,
         samples,
         chromosomes,
         search_index
@@ -21,6 +20,5 @@ class ParamsCounter:
             model = instantiate(cfg.model, chromos=chromosomes)
 
             params = self.count_params(model)
-
             params_list.append(params)
         return params_list
