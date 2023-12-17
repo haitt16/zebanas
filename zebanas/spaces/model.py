@@ -16,8 +16,8 @@ class Network(nn.Module):
         dropout,
         num_classes,
         last_channels,
-        width_mult,
-        depth_mult
+        width_mult=1.0,
+        depth_mult=1.0
     ):
         super().__init__()
         self.stem = Conv2dNormActivation(
@@ -37,8 +37,8 @@ class Network(nn.Module):
             stride = strides[i+1]
             cells.append(
                 Cell(
-                    chromo, in_channels, out_channels, stride,
-                    width_mult, depth_mult
+                    chromo, in_channels, out_channels,
+                    stride, width_mult, depth_mult
                 )
             )
         self.features = nn.Sequential(*cells)

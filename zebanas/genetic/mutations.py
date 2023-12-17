@@ -8,7 +8,7 @@ class SumDivSwapPart0Part2Mutation:
         self.p_sum = p_sum
         self.p_div = p_div
         self.p_swap = 1 - p_sum - p_div
-    
+
     def _nlayer_mutate(self, data):
         pop_size = data.shape[0]
         mutate_idxs = np.random.random(pop_size) < self.pm

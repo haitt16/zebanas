@@ -4,8 +4,9 @@ import torch.nn as nn
 from collections import defaultdict
 from tqdm import tqdm
 
-from hydra.utils import instantiate
-import time
+# from hydra.utils import instantiate
+
+from ..spaces.model import Network
 
 
 class ZicoProxy:
@@ -51,9 +52,10 @@ class ZicoProxy:
         model.to(device)
         for x, y in dataloader:
             model.zero_grad()
-            x, y = x.to(device), y.to(device)
+            # x, y = x.to(device), y.to(device)
 
             y_pred = model(x)
+
             loss = self.loss_fn(y_pred, y)
 
             loss.backward()
@@ -62,11 +64,17 @@ class ZicoProxy:
 
         return self.calc_zico(grad_dict)
 
-    def get_zico_from_chromosomes(self, cfg, chromosomes, dataloader, device):
-
-        model = instantiate(cfg.model, chromos=chromosomes)
+    def get_single(self, cfg, chromosomes, dataloader, device):
+        model_hparams = cfg.model
+        model = Network(
+            chromosomes,
+            model_hparams.network_channels,
+            model_hparams.strides,
+            model_hparams.dropout,
+            model_hparams.num_classes,
+            model_hparams.last_channels,
+        )
         scores = []
-        print("Params", sum(p.numel() for p in model.parameters() if p.requires_grad))
 
         for _ in tqdm(range(self.repetitions)):
             score = self.get_zico(
@@ -88,9 +96,19 @@ class ZicoProxy:
         search_index
     ):
         objs = []
+
+        model_hparams = cfg.model
+
         for chromo in tqdm(samples, "Evaluating"):
             chromosomes[search_index] = chromo
-            model = instantiate(cfg.model, chromos=chromosomes)
+            model = Network(
+                chromosomes,
+                model_hparams.network_channels,
+                model_hparams.strides,
+                model_hparams.dropout,
+                model_hparams.num_classes,
+                model_hparams.last_channels,
+            )
             scores = []
             for _ in range(self.repetitions):
                 score = self.get_zico(

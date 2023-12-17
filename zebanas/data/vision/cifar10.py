@@ -1,6 +1,23 @@
-from torch.utils.data import DataLoader
+import torch
+from torch.utils.data import Dataset, DataLoader
 import torchvision
 import torchvision.transforms as T
+
+
+class DatasetCifar10(Dataset):
+    def __init__(self, dset, num_classes):
+        self.dset = dset
+        self.num_classes = num_classes
+
+    def __getitem__(self, index):
+        x, y = self.dset[index]
+        ones = torch.ones(self.num_classes)
+        ones[y] = 1.
+
+        return x, ones
+
+    def __len__(self):
+        return len(self.dset)
 
 
 class DataLoaderforSearchGetter:
@@ -41,9 +58,10 @@ class DataLoaderforSearchGetter:
             transform=self.transforms(),
             download=True
         )
-        return dset
+        return DatasetCifar10(dset, num_classes=10)
+        # return dset
 
-    def load(self):
+    def load(self, device="cuda"):
         dloader = DataLoader(
             self.dataset(),
             batch_size=self.batch_size,
@@ -53,6 +71,6 @@ class DataLoaderforSearchGetter:
         batches = []
         for i, batch in enumerate(dloader):
             if i < self.n_batches:
-                batches.append(batch)
+                batches.append([x.to(device) for x in batch])
 
         return batches

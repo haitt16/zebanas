@@ -8,7 +8,7 @@ class RandomPart0Part2Sampler:
     def __init__(self, bound, pop_size):
         self.bound = bound
         self.max_layers = bound.upper[0]
-        self.max_lens = 1 + self.max_layers + 5
+        self.max_lens = 1 + self.max_layers + 3
         self.pop_size = pop_size
 
     def __call__(self, cfg):
@@ -40,13 +40,11 @@ class BruteForcePart0Part2Sampler:
             seq[i] = val
             self._generate(seq, i+1)
 
-    def __call__(self, cfg):
+    def __call__(self):
         self.samples = []
         print("Sampling")
         self._generate(copy.deepcopy(self.bound.lower), 0)
-        print("Sample length", len(self.samples))
-        print(len(self.samples[0]))
-        return Population.new(cfg, self.samples)
+        return self.samples
 
 
 class FullCellSampler:
@@ -68,23 +66,23 @@ class FullCellSampler:
             seq[i] = val
             self._generate_part1(seq, i+1, part1_samples)
 
-    def __call__(self, cfg):
-        part02_samples = self.part02_sampler(cfg)
+    def __call__(self):
+        part02_samples = self.part02_sampler()
         self.samples = []
 
         for sample02 in part02_samples:
-            nlayers = sample02.nlayers
+            nlayers = sample02[0]
             part1_samples = []
 
             base_seq = [self.expand_choice[0]]*nlayers
             self._generate_part1(copy.deepcopy(base_seq), 0, part1_samples)
-            sample = sample02.data
+            sample = copy.deepcopy(sample02)
             for sample1 in part1_samples:
                 sample[1:nlayers+1] = sample1
 
                 self.samples.append(copy.deepcopy(sample))
 
-        print(len(self.samples))
+        # print(len(self.samples))
 
         # return Population.new(cfg, self.samples)
         return self.samples

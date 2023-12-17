@@ -1,5 +1,5 @@
 from tqdm import tqdm
-from hydra.utils import instantiate
+from ..spaces.model import Network
 
 
 class ParamsCounter:
@@ -15,9 +15,18 @@ class ParamsCounter:
     ):
         params_list = []
 
-        for chromo in tqdm(samples, "Params"):
+        model_hparams = cfg.model
+
+        for chromo in samples:
             chromosomes[search_index] = chromo
-            model = instantiate(cfg.model, chromos=chromosomes)
+            model = Network(
+                chromosomes,
+                model_hparams.network_channels,
+                model_hparams.strides,
+                model_hparams.dropout,
+                model_hparams.num_classes,
+                model_hparams.last_channels,
+            )
 
             params = self.count_params(model)
             params_list.append(params)

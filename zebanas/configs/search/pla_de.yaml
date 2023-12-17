@@ -1,0 +1,78 @@
+model:
+  _target_: zebanas.spaces.model.Network
+  # _partial_: true
+  chromos: null
+  network_channels: [24, 40, 80, 112, 192, 360]
+  strides: [1, 1, 2, 1, 2, 1]
+  dropout: 0.2
+  num_classes: 10
+  last_channels: 1280
+  width_mult: 1.0
+  depth_mult: 1.0
+
+chromosome:
+  _target_: zebanas.genetic.chromosome.Chromosome
+  # bound:
+  #   lower: [1, 1, 1, 1, 1, 1, 1, 3, 1, 0]
+  #   upper: [6, 6, 6, 6, 6, 6, 6, 11, 11, 1]
+  #   expand_choice: [1, 2, 4, 6]
+
+global_searcher:
+  _target_: zebanas.tasks.search.DELatencyAwareSearcher
+  cell_algorithm:
+    _target_: zebanas.algorithms.pla_de.PruningLatencyAware
+    pop_size: 30
+    params_bound: 6000000
+
+    score_evaluator:
+      _target_: zebanas.evaluators.zico.ZicoProxy
+      loss_fn:
+        _target_: zebanas.criterions.cross_entropy.CrossEntropyCriterion
+      repetitions: 20
+
+    latency_evaluator:
+      _target_: zebanas.evaluators.latency.CellLatencyEstimator
+      path: "zebanas/checkpoints/latency/latency_c10.pth"
+    
+    sampler:
+      _target_: zebanas.genetic.samplers.FullCellSampler
+      bound:
+        lower: [1, 3, 1, 0]
+        upper: [6, 11, 11, 1]
+      expand_choice: [1, 2, 4, 6]
+  
+  global_algorithm:
+    _target_: zebanas.algorithms.pla_de.DEforLatencyAwarePruningGlobal
+    evaluator:
+      _target_: zebanas.evaluators.search.SearcherEvaluator
+      searcher:
+        _target_: zebanas.tasks.search.CellbyCellLatencyAwareSearcher
+        n_cells: ${execute.n_cells}
+        backward: true
+
+      score_evaluator: ${global_searcher.cell_algorithm.score_evaluator}
+    
+    hparams: 
+      F: 0.8
+      CR: 0.9
+      pop_size: 50
+      n_gens: 50
+      max_latency: 8.0
+      n_cells: ${execute.n_cells}
+      max_score: -900.
+
+data:
+  _target_: zebanas.data.vision.cifar10.DataLoaderforSearchGetter
+  data_dir: "/home/haitt/workspaces/data/vision/cifar10"
+  batch_size: 2
+  image_size: 32
+  crop_size: 32
+  n_batches: 2
+
+execute:
+  n_cells: 5
+  device: 'cuda'
+  start_step: 0
+  end_step: 7
+  sols_dir: "logs/2023-12-08"
+  save_interval: 5
