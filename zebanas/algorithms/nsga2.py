@@ -484,6 +484,14 @@ class GA_Network:
         )
         best_score = 0
         for gen in range(self.n_generations):
+            min_score = 0
+            for c in population:
+                if c.obj[0] < min_score:
+                    min_score = c.obj[0]
+            if min_score < best_score:
+                best_score = min_score
+            print("[Best score in history]")
+
             print(f"[Step {gen+1}]")
             population = self.step(
                 cfg=cfg,
@@ -495,12 +503,5 @@ class GA_Network:
 
             if (gen+1) % 10 == 0:
                 self.save_state_dict(out_dir, gen, population)
-
-            min_score = 0
-            for c in population:
-                if c.obj[0] < min_score:
-                    min_score = c.obj[0]
-            if min_score < best_score:
-                best_score = min_score
 
         return population
