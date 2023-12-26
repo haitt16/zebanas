@@ -1,7 +1,9 @@
 import random
 # from .chromosome import Chromosome
+import numpy as np
 import copy
 from .population import Population
+# from .chromosome import ChromosomeV2
 
 
 class RandomPart0Part2Sampler:
@@ -86,3 +88,38 @@ class FullCellSampler:
 
         # return Population.new(cfg, self.samples)
         return self.samples
+
+
+class FullNetworkSampling:
+    def __init__(self, n_cells, bound, expand_choice):
+        self.bound = bound
+        self.expand_choice = expand_choice
+        self.n_cells = n_cells
+
+    def __call__(self, pop_size):
+        population = []
+        for _ in range(pop_size):
+            chromo = []
+            for _ in range(self.n_cells):
+                op_idx = np.random.randint(
+                    self.bound.lower[0],
+                    self.bound.upper[0]+1
+                )
+                nlayers = np.random.randint(
+                    self.bound.lower[1],
+                    self.bound.upper[1]+1
+                )
+                expands = random.choices(
+                    self.expand_choice,
+                    weights=[1, 1, 1],
+                    k=nlayers
+                )
+                expands = expands + [1] * (self.bound.upper[1] - nlayers)
+
+                chromo.append(
+                    [op_idx, nlayers] + expands
+                )
+
+            population.append(chromo)
+
+        return Population.new(population)

@@ -1,6 +1,7 @@
 import torch.nn as nn
 
 from .operations import OperationPool
+from .operations_v2 import OperationPoolV2
 from .utils import _adjust_channels, adjust_depth
 
 
@@ -90,3 +91,36 @@ class Cell(nn.Module):
 
     def forward(self, x):
         return self.cell(x)
+
+
+class Gecco2024Cell(nn.Module):
+    def __init__(
+        self,
+        chromo,
+        in_chn,
+        out_chn,
+        stride
+    ):
+        super().__init__()
+        op_idx = chromo[0]
+        nlayers = chromo[1]
+        expand_ratios = chromo[2:]
+
+        block_list = []
+
+        for i in range(nlayers):
+            if i > 0:
+                in_chn = out_chn
+                stride = 1
+            block = OperationPoolV2(
+                expand_ratios[i],
+                in_chn, out_chn,
+                stride, op_idx
+            )()
+
+            block_list.append(block)
+
+        self.features = nn.Sequential(*block_list)
+
+    def forward(self, x):
+        return self.features(x)

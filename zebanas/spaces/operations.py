@@ -52,10 +52,10 @@ class DepthwiseOperation(nn.Module):
 
 
 class GhostOperation(nn.Module):
-    def __init__(self, in_chn, out_chn, kernel_size, stride):
+    def __init__(self, in_chn, out_chn, kernel_size, stride, relu):
         super().__init__()
 
-        layers = [GhostModule(in_chn, out_chn, relu=True)]
+        layers = [GhostModule(in_chn, out_chn, relu=relu)]
 
         if stride > 1:
             layers.append(
@@ -145,10 +145,16 @@ OPERATIONS_CLASSES = [
 
 
 class OperationPool:
-    def __init__(self, in_chn, out_chn, stride, index, expand_ratio=0):
+    def __init__(
+        self,
+        in_chn, out_chn, stride,
+        index, expand_ratio=0, relu=True
+    ):
         op_class, k = OPERATIONS_CLASSES[index]
 
-        if index >= 3:
+        if index in [3, 4, 5]:
+            self.op = op_class(in_chn, out_chn, k, stride, relu=relu)
+        elif index >= 6:
             self.op = op_class(in_chn, out_chn, k, stride)
         elif index == 0:
             self.op = op_class(out_chn, stride)

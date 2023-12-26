@@ -33,3 +33,33 @@ class CellLatencyEstimator:
             latency_list.append(latency)
 
         return latency_list
+
+
+class NetworkLatencyEstimator:
+    def __init__(self, path, bound):
+        self.latency_table = torch.load(path)
+        self.latency_table = {
+            k: v["mean"] for k, v in self.latency_table.items()
+        }
+        self.bound = bound
+
+    def get_latency(self, cfg, chromos):
+        latency = 0.
+        for i in range(len(cfg.network_channels[:-1])):
+            cell_chromo = chromos.data[i]
+            n = cell_chromo[1]
+
+            for j in range(n):
+                id = (i, min(1, j), cell_chromo[j+2], cell_chromo[0])
+                latency += self.latency_table[id]
+
+        return latency
+
+    def __call__(self, cfg, population):
+        latency_list = []
+
+        for chromo in population:
+            latency = self.get_latency(cfg, chromo)
+            latency_list.append(latency)
+
+        return latency_list

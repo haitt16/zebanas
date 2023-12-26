@@ -61,7 +61,7 @@ class DataLoaderforSearchGetter:
         return DatasetCifar10(dset, num_classes=10)
         # return dset
 
-    def load(self, device="cuda"):
+    def load(self):
         dloader = DataLoader(
             self.dataset(),
             batch_size=self.batch_size,
@@ -71,6 +71,6 @@ class DataLoaderforSearchGetter:
         batches = []
         for i, batch in enumerate(dloader):
             if i < self.n_batches:
-                batches.append([x.to(device) for x in batch])
+                batches.append(batch)
 
         return batches

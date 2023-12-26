@@ -2,7 +2,7 @@ import numpy as np
 # from tqdm import tqdm
 # from hydra.utils import instantiate
 
-from .chromosome import Chromosome
+from .chromosome import ChromosomeV2
 
 
 class Population(np.ndarray):
@@ -36,9 +36,9 @@ class Population(np.ndarray):
         )
 
     @classmethod
-    def new(cls, cfg, data):
-        print("[Creating population from data]")
+    def new(cls, data):
+        # print("[Creating population from data]")
         return Population.__new__(
             cls,
-            [Chromosome(chromo=d) for d in data]
+            [ChromosomeV2(chromo=d) for d in data]
         )

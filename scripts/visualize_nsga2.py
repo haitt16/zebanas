@@ -2,16 +2,22 @@ import os
 import torch
 import matplotlib.pyplot as plt
 
-path = "logs/2023-11-21/checkpoints"
+dir = "/home/haitt/workspaces/codes/nas/zebanas/outputs/2023-12-25/20-08-30/checkpoints"
+point_list = []
 
-pops = []
-for file in os.listdir(path):
-    if "pop" in file:
-        pops.append(torch.load(os.path.join(path, file)))
+for i in range(1, 1000):
+    path = os.path.join(dir, f"state_dict_{i*10}.pth")
+    if not os.path.isfile(path):
+        break
 
-objs = [p.get_obj() for p in pops]
-print(objs)
+    state_dict = torch.load(path)
+    population = state_dict["population"]
+
+    point_list.append(population.get_obj())
 
 plt.figure()
-plt.scatter(objs[0][:, 0], objs[0][:, 1])
+for p in point_list:
+    # p = point_list[0]
+    plt.scatter(p[:, 1],  p[:, 0])
+
 plt.show()

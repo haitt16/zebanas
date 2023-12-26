@@ -1,5 +1,6 @@
 import numpy as np
 from .population import Population
+# import random
 
 
 class AverageSwapPart0Part2Crossover:
@@ -37,3 +38,41 @@ class AverageSwapPart0Part2Crossover:
         off = np.concatenate([off[:, [0]], X_tmp, off[:, 1:]], axis=-1)
 
         return Population.new(cfg, off.tolist())
+
+
+class CellBased2PointCrossover:
+    def __init__(self, p):
+        self.p = p
+
+    def __call__(self, population):
+        size = len(population)
+        ncells = len(population[0].data)
+        assert size % 2 == 0
+
+        parent1 = population[:size//2].get_data()
+        parent2 = population[size//2:].get_data()
+        off1 = parent1.copy()
+        off2 = parent2.copy()
+
+        x = np.random.random(size//2) < self.p
+        x = np.where(x)[0]
+
+        if len(x) == 0:
+            return population
+
+        perm = np.concatenate([
+            np.random.permutation(ncells)[None, :] for _ in range(len(x))
+        ])
+
+        # print(perm.shape)
+        y = perm[:, :2].T
+
+        for i in range(2):
+            _y = y[i]
+            tmp = off1[x, _y].copy()
+            off1[x, _y] = off2[x, _y]
+            off2[x, _y] = tmp
+
+        offspring = np.concatenate([off1, off2])
+
+        return Population.new(offspring.tolist())

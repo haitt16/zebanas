@@ -1,5 +1,6 @@
 import numpy as np
 from .population import Population
+import random
 
 
 class SumDivSwapPart0Part2Mutation:
@@ -72,3 +73,69 @@ class SumDivSwapPart0Part2Mutation:
             axis=-1
         )
         return Population.new(cfg, off.tolist())
+
+
+class Gecco2024Mutation:
+    def __init__(self, max_layers, bound, expand, p):
+        self.p = p
+        self.bound = bound
+        self.max_layers = max_layers
+        self.expand = expand
+
+    def mutate(self, samples):
+        '''
+        0: change operations
+        1: add block
+        2: delete block
+        3: modify block
+        '''
+
+        if len(samples.shape) == 1:
+            samples = samples[None, :]
+        elif len(samples.shape) == 0:
+            return samples
+
+        size = len(samples)
+        op = np.random.randint(4, size=size)
+
+        # assert len(samples.shape) == 2, str(samples)
+
+        for i in range(size):
+            n = samples[i][1]
+            if op[i] == 0:
+                o = random.choice([
+                    j for j in range(self.bound) if j != samples[i][0]
+                ])
+                samples[i][0] = o
+
+            elif op[i] == 1 and n < self.max_layers:
+                samples[i][1] += 1
+                xr = random.choice(self.expand)
+                samples[i][n+2] = xr
+            elif op[i] == 2 and 1 < n:
+                samples[i][1] -= 1
+            else:
+                ci = random.choice(list(range(n)))
+                xr = random.choice(
+                    [j for j in self.expand if j != samples[i][ci+2]]
+                )
+                samples[i][ci+2] = xr
+
+        return samples
+
+    def __call__(self, population):
+
+        size = len(population)
+        ncells = len(population[0].data)
+        offspring = population.get_data().copy()
+
+        x = np.random.random(size) < self.p
+        x = np.where(x)[0]
+        y = np.random.randint(ncells, size=len(x))
+
+        samples = self.mutate(
+            np.squeeze(offspring[x, y])
+        )
+        offspring[x, y] = samples
+
+        return Population.new(offspring.tolist())

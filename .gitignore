@@ -1,2 +1,7 @@
 logs
 outputs
+*.txt
+*.pth
+*.sh
+**__pycache__**
+scripts

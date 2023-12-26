@@ -2,6 +2,7 @@ import numpy as np
 # from scipy.spatial import distance
 
 from .population import Population
+from .chromosome import ChromosomeV2
 
 
 def calc_domination_matrix(A, B):
@@ -18,45 +19,35 @@ def calc_domination_matrix(A, B):
     return M
 
 
-def unique_populations(pop):
-    new_pop = []
-    for chromo in pop:
-        if chromo not in new_pop:
-            new_pop.append(chromo)
+def unique_populations(population):
+    new_population = []
 
-    new_pop = Population.create(new_pop)
-    len_pop = 2*(len(new_pop)//2)
-    return new_pop[:int(len_pop)]
+    vect = np.vectorize(ChromosomeV2.same_as)
+    for chromo in population:
+        if len(new_population) == 0:
+            new_population.append(chromo)
+            continue
 
+        if not np.any(vect(chromo, new_population)):
+            new_population.append(chromo)
 
-def eliminate_duplicates(pop, pop_list):
-    new_pop = []
-    prev_pop = Population.merge(pop_list)
-    for chromo in pop:
-        if chromo not in prev_pop:
-            new_pop.append(chromo)
-
-    new_pop = Population.create(new_pop)
-    len_pop = 2*(len(new_pop)//2)
-    return new_pop[:int(len_pop)]
+    new_population = Population.create(new_population)
+    return new_population
 
 
-# def eliminate_duplicates(pop, pop_list):
-#     if len(pop) == 0:
-#         return pop
-#     prev_pop = Population.merge(pop_list)
-#     D = distance.cdist(pop.get_data(), prev_pop.get_data())
-#     if len(pop_list) == 1 and pop_list[0].shape == pop.shape:
-#         if np.all(pop_list[0] == pop):
-#             D[np.triu_indices(len(pop))] = np.inf
+def eliminate_duplicates(population, population_list):
+    new_population = []
+    population_list = Population.merge(population_list)
 
-#     D[np.isnan(D)] = np.inf
-#     is_duplicate = np.full(len(pop), False)
-#     is_duplicate[np.any(D <= 1e-16, axis=1)] = True
+    vect = np.vectorize(ChromosomeV2.same_as)
+    for chromo in population:
 
-#     pop = pop[~is_duplicate]
-#     len_pop = 2*(len(pop)//2)
-#     return pop[:int(len_pop)]
+        if not np.any(vect(chromo, population_list)):
+            new_population.append(chromo)
+
+    new_population = Population.create(new_population)
+    # n = 2*(len(new_population)//2)
+    return new_population
 
 
 def fast_non_dominated_sorting(

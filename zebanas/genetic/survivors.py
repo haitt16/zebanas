@@ -6,7 +6,6 @@ class RankandCrowdingSurvivor:
     def __call__(self, population, n_survive):
         F = population.get_obj()
         survivor_idxs = []
-
         fronts = fast_non_dominated_sorting(
             F,
             n_stop_if_ranked=n_survive,

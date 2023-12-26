@@ -1,5 +1,6 @@
 import os
 import torch
+from ..utils.memory import set_clock_speed, reset_clock_speed
 
 
 class CellbyCellSearcher:
@@ -102,3 +103,18 @@ class DELatencyAwareSearcher:
             dataloader,
             chromosomes,
         )
+
+
+class FullNetworkSearcher:
+    def __init__(self, algorithm):
+        self.algorithm = algorithm
+
+    def search(self, cfg, dataloader, out_dir):
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+
+        device_id = os.environ.get("CUDA_VISIBLE_DEVICES")
+        set_clock_speed(device_id, cfg.execute.clock_speed)
+        solutions = self.algorithm.run(cfg.model, dataloader, out_dir)
+        reset_clock_speed(device_id)
+        return solutions
