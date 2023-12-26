@@ -179,7 +179,7 @@ class ZicoProxyV2:
 
     def __call__(self, cfg, population, dataloader, device):
         objs = []
-        for sample in tqdm(population):
+        for sample in population:
             chromos = sample.data
             model = Gecco2024Network(
                 chromos,

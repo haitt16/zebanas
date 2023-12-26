@@ -490,7 +490,7 @@ class GA_Network:
                     min_score = c.obj[0]
             if min_score < best_score:
                 best_score = min_score
-            print("[Best score in history]")
+            print("[Best score in history]", best_score)
 
             print(f"[Step {gen+1}]")
             population = self.step(
