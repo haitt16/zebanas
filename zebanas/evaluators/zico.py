@@ -190,7 +190,7 @@ class ZicoProxyV2:
                 cfg.last_channels,
             )
             scores = []
-            for _ in self.repetitions:
+            for _ in range(self.repetitions):
                 torch.cuda._sleep(1_000_000)
                 score = self.get_zico(
                     model,
