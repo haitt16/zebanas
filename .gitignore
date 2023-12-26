@@ -1,7 +1,7 @@
 logs
 outputs
 *.txt
-*.pth
+# *.pth
 *.sh
 **__pycache__**
 scripts
