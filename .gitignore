@@ -5,3 +5,4 @@ outputs
 *.sh
 **__pycache__**
 scripts
+database
