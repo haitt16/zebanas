@@ -58,3 +58,13 @@ class ParetoFrontSurvivor:
                 solution = population[i]
         print(solution.data, solution.obj)
         return solution
+
+
+class AgingSurvivor:
+    def __call__(self, population, n_survive):
+        ages = np.array([c.age for c in population])
+        indexs = np.argsort(-ages)
+
+        survivor_idxs = indexs[:n_survive]
+
+        return population[survivor_idxs]

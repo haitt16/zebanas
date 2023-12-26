@@ -21,6 +21,7 @@ class Chromosome:
         self.rank = None
         self.cd = None
         self.obj = [None, None]
+        self.age = None
         self._break_data()
 
     def _break_data(self):
@@ -59,6 +60,7 @@ class ChromosomeV2:
         self.rank = None
         self.cd = None
         self.obj = [None, None]
+        self.age = None
 
     @classmethod
     def same_as(cls, chromo1, chromo2):
