@@ -171,17 +171,16 @@ class NSGA2_Network:
         self.history = None
         self.gen_step = 0
 
-    # def high_latency_eliminate(self, cfg, population, eps=7e-3):
-    #     new_population = []
+    def high_latency_eliminate(self, cfg, population, eps=7e-3):
+        new_population = []
 
-    #     for chromo in population:
-    #         latency = self.latency_evaluator(cfg, [chromo])
-    #         if latency[0] <= self.latency_evaluator.bound + eps:
-    #             new_population.append(chromo)
+        for chromo in population:
+            latency = self.latency_evaluator(cfg, [chromo])
+            if latency[0] <= self.latency_evaluator.bound + eps:
+                new_population.append(chromo)
 
-    #     new_population = Population.create(new_population)
-    #     n = 2 * (len(new_population) // 2)
-    #     return new_population[:n]
+        new_population = Population.create(new_population)
+        return new_population
 
     def evaluate(self, cfg, population, dataloader):
         scores = self.score_evaluator(cfg, population, dataloader, self.device)
@@ -200,7 +199,7 @@ class NSGA2_Network:
             _off = self.mutation(_off)
             _off = unique_populations(_off)
             _off = eliminate_duplicates(_off, [self.history, off])
-            # _off = self.high_latency_eliminate(cfg, _off)
+            _off = self.high_latency_eliminate(cfg, _off)
 
             if len(_off) % 2 != 0:
                 n = 2 * (len(_off) // 2)
@@ -232,11 +231,11 @@ class NSGA2_Network:
             pop = self.sampler(self.pop_size)
             pop = unique_populations(pop)
             pop = eliminate_duplicates(pop, [population])
-            # pop = self.high_latency_eliminate(cfg, pop)
+            pop = self.high_latency_eliminate(cfg, pop)
 
-            # if len(pop) % 2 != 0:
-            #     n = 2 * (len(pop) // 2)
-            #     pop = pop[:n]
+            if len(pop) % 2 != 0:
+                n = 2 * (len(pop) // 2)
+                pop = pop[:n]
 
             if len(population) + len(pop) > self.pop_size:
                 n_remain = self.pop_size - len(population)
