@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # from hydra.utils import instantiate
 
-from ..utils.memory import flush_cache
+# from ..utils.memory import flush_cache
 from ..spaces.model import Network, Gecco2024Network
 
 
@@ -179,7 +179,7 @@ class ZicoProxyV2:
 
     def __call__(self, cfg, population, dataloader, device):
         objs = []
-        for sample in tqdm(population):
+        for sample in population:
             chromos = sample.data
             model = Gecco2024Network(
                 chromos,
@@ -190,7 +190,7 @@ class ZicoProxyV2:
                 cfg.last_channels,
             )
             scores = []
-            for _ in range(self.repetitions):
+            for _ in self.repetitions:
                 torch.cuda._sleep(1_000_000)
                 score = self.get_zico(
                     model,

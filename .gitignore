@@ -4,5 +4,5 @@ outputs
 # *.pth
 *.sh
 **__pycache__**
-scripts
+# scripts
 database
