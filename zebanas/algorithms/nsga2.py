@@ -256,7 +256,6 @@ class NSGA2_Network:
         population,
         dataloader
     ):
-        print("[Step]")
         offspring = self.mating(cfg, population)
         offspring = self.evaluate(
             cfg=cfg,
@@ -296,7 +295,8 @@ class NSGA2_Network:
             dataloader=dataloader
         )
 
-        for gen in tqdm(range(self.n_generations)):
+        for gen in range(self.n_generations):
+            print(f"[Step {gen+1}]")
             population = self.step(
                 cfg=cfg,
                 population=population,
