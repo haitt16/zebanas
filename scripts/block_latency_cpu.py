@@ -67,7 +67,7 @@ def flush_cache(model, xs=None):
     [p.data.zero_() for p in model.parameters()]
 
 
-for j, (id, model, input_shape) in enumerate(tqdm(model_list)):
+for j, (id, model, input_shape) in enumerate(model_list):
     # set_clock_speed()
     model.to(device)
     x = torch.rand(input_shape).to(device)

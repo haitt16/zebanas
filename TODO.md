@@ -6,7 +6,7 @@
 - [ ] Latency estimate ImageNet16-120
 - [ ] Run GA ImageNet16-120
 ## CPU
-- [ ] Latency estimate CIFAR
+- [x] Latency estimate CIFAR
 - [ ] Run GA CIFAR
 - [ ] Latency estimate ImageNet16-120
 - [ ] Run GA ImageNet16-120
