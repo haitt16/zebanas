@@ -395,7 +395,7 @@ class GA_Network:
         for sample in population:
             if np.any(self.in_history(sample)):
                 print("X")
-                index = np.where(self.in_history(sample))[0]
+                index = np.where(self.in_history(sample))[0][0]
                 obj = self.history[index].obj
                 obj_list.append(obj)
                 continue
