@@ -7,8 +7,7 @@ import numpy as np
 
 from zebanas.spaces.operations_v2 import OperationPoolV2
 from tqdm import tqdm
-import subprocess
-
+import time
 
 # torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
@@ -28,7 +27,6 @@ SAMPLES = []
 TABLES = {}
 
 CLOCK_SPEED = 1350
-DEVICE = os.environ.get("CUDA_VISIBLE_DEVICES")
 
 device = torch.device("cpu")
 repetitions = 10_000
@@ -62,28 +60,6 @@ for i in range(len(NETWORKS_CHANNELS[:-1])):
 print("Number of samples:", len(model_list))
 
 
-def set_clock_speed():
-    process = subprocess.Popen(
-        "nvidia-smi",
-        stdout=subprocess.PIPE,
-        shell=True
-    )
-    stdout, _ = process.communicate()
-    process = subprocess.run(
-        f"sudo nvidia-smi -pm ENABLED -i {DEVICE}",
-        shell=True
-    )
-    process = subprocess.run(
-        f"sudo nvidia-smi -lgc {CLOCK_SPEED} -i {DEVICE}",
-        shell=True
-    )
-
-
-def reset_clock_speed():
-    subprocess.run(f"sudo nvidia-smi -pm ENABLED -i {DEVICE}", shell=True)
-    subprocess.run(f"sudo nvidia-smi -rgc -i {DEVICE}", shell=True)
-
-
 def flush_cache(model, xs=None):
     if xs is not None:
         for x in xs:
@@ -91,35 +67,29 @@ def flush_cache(model, xs=None):
     [p.data.zero_() for p in model.parameters()]
 
 
-for id, model, input_shape in tqdm(model_list):
+for j, (id, model, input_shape) in enumerate(tqdm(model_list)):
     # set_clock_speed()
     model.to(device)
     x = torch.rand(input_shape).to(device)
-
+    times = []
     with torch.no_grad():
         # Warmup steps
         for _ in range(100):
             _ = model(x)
 
-        start_events = [
-            torch.cuda.Event(enable_timing=True) for _ in range(repetitions)
-        ]
-        end_events = [
-            torch.cuda.Event(enable_timing=True) for _ in range(repetitions)
-        ]
-
-        for i in tqdm(range(repetitions)):
-            torch.cuda._sleep(1_000_000)
-            start_events[i].record()
+        for i in range(repetitions):
+            start = time.time()
             _ = model(x)
-            end_events[i].record()
+            end = time.time()
+            t = end - start
+            times.append(t*1000)
 
-        torch.cuda.synchronize()
-        times = [s.elapsed_time(e) for s, e in zip(start_events, end_events)]
         avg = np.mean(times)
         std = np.std(times)
         print(f"*** {avg} " + u"\u00B1" + f" {std} ***")
 
+        # if j == 0:
+        #     continue
         TABLES[id] = {"mean": avg, "std": std}
     flush_cache(model, x)
     # reset_clock_speed()

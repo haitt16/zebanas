@@ -28,13 +28,13 @@ from zebanas.data.vision.cifar10 import DataLoaderforSearchGetter
 
 # torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
-torch.set_num_threads(4)
+torch.set_num_threads(1)
 
 CLOCK_SPEED = 1350
 DEVICE = os.environ.get("CUDA_VISIBLE_DEVICES")
 
 device = torch.device("cpu")
-repetitions = 10_000
+repetitions = 1_000
 TABLES = {}
 
 model_list = [
@@ -88,38 +88,38 @@ def flush_cache(model, xs=None, no_grad=True):
         [p.grad.zero_() for p in model.parameters()]
 
 
-# for id, model, input_shape in tqdm(model_list):
-#     set_clock_speed()
-#     model.to(device)
-#     x = torch.rand(1, 3, input_shape, input_shape).to(device)
+for id, model, input_shape in tqdm(model_list):
+    set_clock_speed()
+    model.to(device)
+    x = torch.rand(1, 3, input_shape, input_shape).to(device)
 
-#     with torch.no_grad():
-#         # Warmup steps
-#         for _ in range(100):
-#             _ = model(x)
+    with torch.no_grad():
+        # Warmup steps
+        for _ in range(100):
+            _ = model(x)
 
-#         start_events = [
-#             torch.cuda.Event(enable_timing=True) for _ in range(repetitions)
-#         ]
-#         end_events = [
-#             torch.cuda.Event(enable_timing=True) for _ in range(repetitions)
-#         ]
+        start_events = [
+            torch.cuda.Event(enable_timing=True) for _ in range(repetitions)
+        ]
+        end_events = [
+            torch.cuda.Event(enable_timing=True) for _ in range(repetitions)
+        ]
 
-#         for i in tqdm(range(repetitions)):
-#             torch.cuda._sleep(1_000_000)
-#             start_events[i].record()
-#             _ = model(x)
-#             end_events[i].record()
+        for i in tqdm(range(repetitions)):
+            torch.cuda._sleep(1_000_000)
+            start_events[i].record()
+            _ = model(x)
+            end_events[i].record()
 
-#         torch.cuda.synchronize()
-#         times = [s.elapsed_time(e) for s, e in zip(start_events, end_events)]
-#         avg = np.mean(times)
-#         std = np.std(times)
-#         print(f"*** {avg} " + u"\u00B1" + f" {std} ***")
+        torch.cuda.synchronize()
+        times = [s.elapsed_time(e) for s, e in zip(start_events, end_events)]
+        avg = np.mean(times)
+        std = np.std(times)
+        print(f"*** {avg} " + u"\u00B1" + f" {std} ***")
 
-#         TABLES[id] = {"latency": {"mean": avg, "std": std}}
-#     flush_cache(model, [x])
-#     reset_clock_speed()
+        # TABLES[id] = {"latency": {"mean": avg, "std": std}}
+    flush_cache(model, [x])
+    reset_clock_speed()
 
 # TABLES = torch.load("zebanas/checkpoints/latency/sota_c10_gpu.pth")
 evaluator = ZicoProxyV2(torch.nn.CrossEntropyLoss(), 30)

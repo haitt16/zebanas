@@ -2,17 +2,17 @@
 
 ## GPU
 - [x] Latency estimate CIFAR
-- [ ] Run GA CIFAR
-- [ ] Latency estimate ImageNet1k
-- [ ] Run GA ImageNet1k
+- [x] Run GA CIFAR
+- [ ] Latency estimate ImageNet16-120
+- [ ] Run GA ImageNet16-120
 ## CPU
 - [ ] Latency estimate CIFAR
 - [ ] Run GA CIFAR
-- [ ] Latency estimate ImageNet1k
-- [ ] Run GA ImageNet1k
+- [ ] Latency estimate ImageNet16-120
+- [ ] Run GA ImageNet16-120
 
 # Train
 - [ ] GPU CIFAR10
-- [ ] GPU ImageNet1k
+- [ ] GPU ImageNet16-120
 - [ ] CPU CIFAR 10
-- [ ] GPU ImageNet1k
+- [ ] GPU ImageNet16-120

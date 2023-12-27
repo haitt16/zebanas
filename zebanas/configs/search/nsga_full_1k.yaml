@@ -10,7 +10,7 @@ model:
   # _partial_: true
   chromos: null
   network_channels: [24, 48, 96, 160, 256, 360]
-  strides: [1, 2, 2, 2, 2, 2]
+  strides: [1, 1, 2, 1, 2, 1]
   dropout: 0.1
   num_classes: 10
   last_channels: 1280
