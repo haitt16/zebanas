@@ -5,6 +5,7 @@ from tqdm import tqdm
 # from pprint import pprint
 
 from ..genetic.population import Population
+from ..genetic.chromosome import ChromosomeV2
 from ..genetic.utils import eliminate_duplicates, unique_populations
 # from ..genetic.utils import fast_non_dominated_sorting
 
@@ -167,7 +168,6 @@ class NSGA2_Network:
         self.sampler = sampler
         self.survivor = survivor
         self.device = device
-        self.table = {}
         self.history = None
         self.gen_step = 0
 
@@ -182,12 +182,37 @@ class NSGA2_Network:
         new_population = Population.create(new_population)
         return new_population
 
-    def evaluate(self, cfg, population, dataloader):
-        scores = self.score_evaluator(cfg, population, dataloader, self.device)
-        latencies = self.latency_evaluator(cfg, population)
-        objs = [[z, l] for z, l in zip(scores, latencies)]
+    def in_history(self, chromo):
+        vect = np.vectorize(ChromosomeV2.same_as)
+        print(vect(chromo, self.history))
+        return vect(chromo, self.history)
 
-        return population.set_obj(objs)
+    def evaluate(self, cfg, population, dataloader):
+
+        obj_list = []
+
+        for sample in population:
+            _ = self.in_history(sample)
+            if np.any(self.in_history(sample)):
+                print("X")
+                index = np.where(self.in_history(sample))[0]
+                obj = self.history[index].obj
+                obj_list.append(obj)
+                continue
+
+            score = self.score_evaluator.get(
+                cfg,
+                sample,
+                dataloader,
+                self.device
+            )
+            latency = self.latency_evaluator.get(
+                cfg,
+                sample
+            )
+            obj_list.append([score, latency])
+
+        return population.set_obj(obj_list)
 
     def mating(self, cfg, population):
         off = []
@@ -198,7 +223,7 @@ class NSGA2_Network:
             _off = self.crossover(parents)
             _off = self.mutation(_off)
             _off = unique_populations(_off)
-            _off = eliminate_duplicates(_off, [self.history, off])
+            _off = eliminate_duplicates(_off, [population, off])
             _off = self.high_latency_eliminate(cfg, _off)
 
             if len(_off) % 2 != 0:
@@ -269,7 +294,9 @@ class NSGA2_Network:
             population=offspring,
             dataloader=dataloader
         )
-        self.history = Population.merge([self.history, offspring])
+
+        _off = eliminate_duplicates(offspring, [self.history])
+        self.history = Population.merge([self.history, _off])
 
         population = Population.merge([
             population, offspring
@@ -356,12 +383,36 @@ class GA_Network:
         new_population = Population.create(new_population)
         return new_population
 
-    def evaluate(self, cfg, population, dataloader):
-        scores = self.score_evaluator(cfg, population, dataloader, self.device)
-        latencies = self.latency_evaluator(cfg, population)
-        objs = [[z, l] for z, l in zip(scores, latencies)]
+    def in_history(self, chromo):
+        if self.history is None:
+            return [False]
+        vect = np.vectorize(ChromosomeV2.same_as)
+        return vect(chromo, self.history)
 
-        return population.set_obj(objs)
+    def evaluate(self, cfg, population, dataloader):
+
+        obj_list = []
+        for sample in population:
+            if np.any(self.in_history(sample)):
+                print("X")
+                index = np.where(self.in_history(sample))[0]
+                obj = self.history[index].obj
+                obj_list.append(obj)
+                continue
+
+            score = self.score_evaluator.get(
+                cfg,
+                sample,
+                dataloader,
+                self.device
+            )
+            latency = self.latency_evaluator.get(
+                cfg,
+                sample
+            )
+            obj_list.append([score, latency])
+
+        return population.set_obj(obj_list)
 
     def mating(self, cfg, population, gen):
         off = []
@@ -372,7 +423,7 @@ class GA_Network:
             _off = self.crossover(parents)
             _off = self.mutation(_off)
             _off = unique_populations(_off)
-            _off = eliminate_duplicates(_off, [self.history, off])
+            _off = eliminate_duplicates(_off, [population, off])
             _off = self.high_latency_eliminate(cfg, _off)
 
             if len(_off) % 2 != 0:
@@ -410,10 +461,6 @@ class GA_Network:
             pop = eliminate_duplicates(pop, [population])
             pop = self.high_latency_eliminate(cfg, pop)
 
-            # if len(pop) % 2 != 0:
-            #     n = 2 * (len(pop) // 2)
-            #     pop = pop[:n]
-
             if len(population) + len(pop) > self.pop_size:
                 n_remain = self.pop_size - len(population)
                 pop = pop[:n_remain]
@@ -423,13 +470,13 @@ class GA_Network:
 
         for i in range(len(population)):
             population[i].age = 0
-        self.history = population.copy()
 
         population = self.evaluate(
             cfg=cfg,
             population=population,
             dataloader=dataloader
         )
+        self.history = population.copy()
         population = self.survivor(
             population,
             n_survive=self.pop_size
@@ -449,7 +496,9 @@ class GA_Network:
             population=offspring,
             dataloader=dataloader
         )
-        self.history = Population.merge([self.history, offspring])
+        _off = eliminate_duplicates(offspring, [self.history])
+        print("[New offspring compare to history]", len(_off))
+        self.history = Population.merge([self.history, _off])
 
         population = Population.merge([
             population, offspring
@@ -482,14 +531,19 @@ class GA_Network:
             dataloader=dataloader
         )
         best_score = 0
+        best_solution = None
         for gen in range(self.n_generations):
             min_score = 0
+            min_solution = None
             for c in population:
                 if c.obj[0] < min_score:
                     min_score = c.obj[0]
+                    min_solution = c.data
             if min_score < best_score:
                 best_score = min_score
+                best_solution = min_solution
             print("[Best score in history]", best_score)
+            print("[Best solution]\n", np.array(best_solution))
 
             print(f"[Step {gen+1}]")
             population = self.step(

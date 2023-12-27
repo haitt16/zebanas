@@ -177,30 +177,33 @@ class ZicoProxyV2:
         # flush_cache(model, [x, y])
         return self.calc_zico(grad_dict)
 
+    def get(self, cfg, sample, dataloader, device):
+        chromos = sample.data
+        model = Gecco2024Network(
+            chromos,
+            cfg.network_channels,
+            cfg.strides,
+            cfg.dropout,
+            cfg.num_classes,
+            cfg.last_channels,
+        )
+        scores = []
+        for _ in range(self.repetitions):
+            torch.cuda._sleep(1_000_000)
+            score = self.get_zico(
+                model,
+                dataloader,
+                device
+            )
+            scores.append(score)
+        avg_score = sum(scores) / self.repetitions
+        return avg_score
+
     def __call__(self, cfg, population, dataloader, device):
         objs = []
         for sample in population:
-            chromos = sample.data
-            model = Gecco2024Network(
-                chromos,
-                cfg.network_channels,
-                cfg.strides,
-                cfg.dropout,
-                cfg.num_classes,
-                cfg.last_channels,
-            )
-            scores = []
-            for _ in range(self.repetitions):
-                torch.cuda._sleep(1_000_000)
-                score = self.get_zico(
-                    model,
-                    dataloader,
-                    device
-                )
-                scores.append(score)
-            avg_score = sum(scores) / self.repetitions
-            objs.append(avg_score)
-
+            score = self.get(cfg, sample, dataloader, device)
+            objs.append(score)
         torch.cuda.synchronize()
 
         return objs

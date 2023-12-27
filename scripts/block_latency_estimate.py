@@ -12,6 +12,7 @@ import subprocess
 
 # torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
+torch.set_num_threads(4)
 
 NETWORKS_CHANNELS = [16, 24, 48, 80, 128, 192]
 STRIDES = [1, 1, 2, 1, 2, 1]
@@ -29,7 +30,7 @@ TABLES = {}
 CLOCK_SPEED = 1350
 DEVICE = os.environ.get("CUDA_VISIBLE_DEVICES")
 
-device = torch.device("cuda")
+device = torch.device("cpu")
 repetitions = 10_000
 
 model_list = []
@@ -123,4 +124,4 @@ for id, model, input_shape in tqdm(model_list):
     flush_cache(model, x)
     reset_clock_speed()
 
-torch.save(TABLES, "zebanas/checkpoints/latency/latency_c10.pth")
+torch.save(TABLES, "zebanas/checkpoints/latency/latency_c10_cpu.pth")

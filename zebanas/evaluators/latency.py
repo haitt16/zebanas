@@ -43,7 +43,7 @@ class NetworkLatencyEstimator:
         }
         self.bound = bound
 
-    def get_latency(self, cfg, chromos):
+    def get(self, cfg, chromos):
         latency = 0.
         for i in range(len(cfg.network_channels[:-1])):
             cell_chromo = chromos.data[i]
@@ -59,7 +59,7 @@ class NetworkLatencyEstimator:
         latency_list = []
 
         for chromo in population:
-            latency = self.get_latency(cfg, chromo)
+            latency = self.get(cfg, chromo)
             latency_list.append(latency)
 
         return latency_list

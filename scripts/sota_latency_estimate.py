@@ -28,28 +28,29 @@ from zebanas.data.vision.cifar10 import DataLoaderforSearchGetter
 
 # torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
+torch.set_num_threads(4)
 
 CLOCK_SPEED = 1350
 DEVICE = os.environ.get("CUDA_VISIBLE_DEVICES")
 
-device = torch.device("cuda")
+device = torch.device("cpu")
 repetitions = 10_000
 TABLES = {}
 
 model_list = [
     ("efficientnet_b0", efficientnet_b0(num_classes=10), 224),
-    ("efficientnet_b1", efficientnet_b1(num_classes=10), 240),
-    ("efficientnet_b2", efficientnet_b2(num_classes=10), 288),
-    ("efficientnet_b3", efficientnet_b3(num_classes=10), 300),
+    # ("efficientnet_b1", efficientnet_b1(num_classes=10), 240),
+    # ("efficientnet_b2", efficientnet_b2(num_classes=10), 288),
+    # ("efficientnet_b3", efficientnet_b3(num_classes=10), 300),
     ("resnet18", resnet18(num_classes=10), 224),
     ("resnet34", resnet34(num_classes=10), 224),
-    ("resnet50", resnet50(num_classes=10), 224),
-    ("resnet101", resnet101(num_classes=10), 224),
-    ("mobilenet_v2", mobilenet_v2(num_classes=10), 224),
-    ("mobilenet_v3_small", mobilenet_v3_small(num_classes=10), 224),
-    ("mobilenet_v3_large", mobilenet_v3_large(num_classes=10), 224),
-    ("convnext_tiny", convnext_tiny(num_classes=10), 224),
-    ("ghostnet", ghostnet(num_classes=10), 224)
+    # ("resnet50", resnet50(num_classes=10), 224),
+    # ("resnet101", resnet101(num_classes=10), 224),
+    # ("mobilenet_v2", mobilenet_v2(num_classes=10), 224),
+    # ("mobilenet_v3_small", mobilenet_v3_small(num_classes=10), 224),
+    # ("mobilenet_v3_large", mobilenet_v3_large(num_classes=10), 224),
+    # ("convnext_tiny", convnext_tiny(num_classes=10), 224),
+    # ("ghostnet", ghostnet(num_classes=10), 224)
 ]
 
 print("Number of samples:", len(model_list))
@@ -120,7 +121,7 @@ def flush_cache(model, xs=None, no_grad=True):
 #     flush_cache(model, [x])
 #     reset_clock_speed()
 
-TABLES = torch.load("zebanas/checkpoints/latency/sota_c10_gpu.pth")
+# TABLES = torch.load("zebanas/checkpoints/latency/sota_c10_gpu.pth")
 evaluator = ZicoProxyV2(torch.nn.CrossEntropyLoss(), 30)
 
 for id, model, input_shape in model_list:
@@ -142,7 +143,9 @@ for id, model, input_shape in model_list:
     std = np.std(score_list)
     print(f"*** {avg} " + u"\u00B1" + f" {std} ***")
 
-    TABLES[id]["score"] = {"mean": avg, "std": std}
+    # TABLES[id]["score"] = {"mean": avg, "std": std}
+    print(id, avg, std)
     reset_clock_speed()
 
-torch.save(TABLES, "zebanas/checkpoints/latency/sota_c10_gpu.pth")
+print(TABLES)
+# torch.save(TABLES, "zebanas/checkpoints/latency/sota_c10_gpu.pth")
