@@ -13,10 +13,10 @@ import time
 torch.manual_seed(42)
 torch.set_num_threads(1)
 
-NETWORKS_CHANNELS = [16, 24, 48, 80, 128, 192]
+NETWORKS_CHANNELS = [24, 48, 96, 160, 256, 360]
 STRIDES = [1, 1, 2, 1, 2, 1]
 
-INPUT_SIZE = 32
+INPUT_SIZE = 16
 EXPAND_RATIOS = [3, 4, 6]
 
 OPS_LOWER = [0]
@@ -94,4 +94,4 @@ for j, (id, model, input_shape) in enumerate(model_list):
     flush_cache(model, x)
     # reset_clock_speed()
 
-torch.save(TABLES, "zebanas/checkpoints/latency/latency_c10_cpu.pth")
+torch.save(TABLES, "zebanas/checkpoints/latency/latency_imgn_cpu.pth")
