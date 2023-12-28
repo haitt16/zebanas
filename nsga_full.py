@@ -9,7 +9,7 @@ np.random.seed(42)
 # torch.set_num_threads(1)
 
 
-@hydra.main(config_path="./zebanas/configs/search", config_name="ga_age_full")
+@hydra.main(config_path="./zebanas/configs/search", config_name="ga_full")
 def main(cfg):
     if not os.path.exists(cfg.execute.sols_dir):
         os.makedirs(cfg.execute.sols_dir)

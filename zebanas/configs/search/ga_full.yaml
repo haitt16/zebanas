@@ -41,8 +41,8 @@ searcher:
     
     latency_evaluator:
       _target_: zebanas.evaluators.latency.NetworkLatencyEstimator
-      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/latency_c10_gpu.pth"
-      bound: 4.1
+      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/latency_c10_cpu.pth"
+      bound: 50.
 
     mutation:
       _target_: zebanas.genetic.mutations.Gecco2024Mutation
