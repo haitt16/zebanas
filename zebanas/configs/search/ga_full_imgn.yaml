@@ -1,0 +1,70 @@
+execute:
+  n_cells: 5
+  device: "cuda"
+  clock_speed: 1350 
+  sols_dir: "."
+  save_interval: 5
+
+model:
+  _target_: zebanas.spaces.model.Gecco2024Network
+  # _partial_: true
+  chromos: null
+  network_channels: [24, 48, 96, 160, 256, 360]
+  strides: [1, 1, 2, 1, 2, 1]
+  dropout: 0.1
+  num_classes: 120
+  last_channels: 1280
+
+searcher:
+  _target_: zebanas.tasks.search.FullNetworkSearcher
+  algorithm:
+    _target_: zebanas.algorithms.nsga2.GA_Network
+    device: ${execute.device}
+    n_generations: 10_000
+    pop_size: 100
+    sampler:
+      _target_: zebanas.genetic.samplers.FullNetworkSampling
+      n_cells: ${execute.n_cells}
+      bound:
+        lower: [0, 1]
+        upper: [11, 6]
+      expand_choice: [3, 4, 6]
+    
+    selection:
+      _target_: zebanas.genetic.selections.ScoreSelection
+    
+    score_evaluator:
+      _target_: zebanas.evaluators.zico.ZicoProxyV2
+      repetitions: 1
+      loss_fn:
+        _target_: zebanas.criterions.ce.CrossEntropyCriterion
+    
+    latency_evaluator:
+      _target_: zebanas.evaluators.latency.NetworkLatencyEstimator
+      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/latency_imgn_gpu.pth"
+      bound: 4.
+
+    mutation:
+      _target_: zebanas.genetic.mutations.Gecco2024Mutation
+      max_layers: 6
+      bound: 12
+      expand: ${searcher.algorithm.sampler.expand_choice}
+      p: 0.8
+    
+    crossover:
+      _target_: zebanas.genetic.crossovers.CellBased2PointCrossover
+      p: 0.9
+      
+    survivor:
+      _target_: zebanas.genetic.survivors.AgingSurvivor
+
+
+
+data:
+  _target_: zebanas.data.vision.imagenet16.DataLoaderforSearchGetter
+  data_dir: "/home/haitt/workspaces/data/vision/imagenet16"
+  batch_size: 2
+  image_size: 16
+  crop_size: 16
+  n_batches: 2
+
