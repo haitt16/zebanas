@@ -16,7 +16,7 @@ trainer:
   max_epochs: 200
   val_check_interval: 200
   num_sanity_val_steps: 2
-  gradient_clip_val: 3000.
+  gradient_clip_val: 5.
   log_every_n_steps: 1
   deterministic: true
 
