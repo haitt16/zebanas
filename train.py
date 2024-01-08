@@ -25,9 +25,6 @@ def main(cfg):
     )
 
     datamodule = instantiate(cfg.data)
-    # api = create(cfg.api_path, 'tss', fast_mode=True, verbose=True)
-    # config = api.get_net_config(23, 'cifar10')
-    # model = get_cell_based_tiny_net(config)
     model = instantiate(cfg.module)
 
     trainer.fit(model, datamodule)
