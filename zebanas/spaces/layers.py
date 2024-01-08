@@ -12,7 +12,7 @@ class PointwiseConv(nn.Module):
         in_channels,
         out_channels,
         stride=1,
-        activation=nn.SiLU
+        activation=nn.ReLU
     ):
         super().__init__()
 
@@ -37,7 +37,7 @@ class DepthwiseConv(nn.Module):
         out_channels,
         kernel_size,
         stride,
-        activation=nn.SiLU
+        activation=nn.ReLU
     ):
         super().__init__()
         self.dw = Conv2dNormActivation(

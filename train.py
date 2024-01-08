@@ -5,6 +5,9 @@ from lightning.pytorch.trainer.trainer import Trainer
 import hydra
 from hydra.utils import instantiate
 
+from nats_bench import create
+import xautodl
+from xautodl.models import get_cell_based_tiny_net
 
 @hydra.main(version_base=None, config_path="zebanas/configs/classification", config_name="train")
 def main(cfg):
@@ -21,7 +24,10 @@ def main(cfg):
     )
 
     datamodule = instantiate(cfg.data)
-    model = instantiate(cfg.module)
+    api = create(cfg.api_path, 'tss', fast_mode=True, verbose=True)
+    config = api.get_net_config(23, 'cifar10')
+    model = get_cell_based_tiny_net(config)
+    model = instantiate(cfg.module, model=model)
 
     trainer.fit(model, datamodule)
 

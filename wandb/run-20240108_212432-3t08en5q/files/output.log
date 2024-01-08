@@ -1,0 +1,19 @@
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+  | Name    | Type                  | Params
+--------------------------------------------------
+0 | model   | TinyNetwork           | 802 K
+1 | loss_fn | CrossEntropyCriterion | 0
+--------------------------------------------------
+802 K     Trainable params
+0         Non-trainable params
+802 K     Total params
+3.210     Total estimated model params size (MB)
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:441: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=11` in the `DataLoader` to improve performance.
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:441: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=11` in the `DataLoader` to improve performance.
+
+
+
+
+
+Epoch 0:  16%|███████████████████▋                                                                                                       | 100/625 [00:10<00:57,  9.20it/s, v_num=en5q]
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/call.py:54: Detected KeyboardInterrupt, attempting graceful shutdown...

@@ -27,7 +27,7 @@ class NetworkModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self.model(x)
+        y_hat = self.model(x)[1]
         loss = self.loss_fn(y_hat, y)
         score = self.metric_fn(y_hat, y)
 
@@ -38,7 +38,7 @@ class NetworkModule(pl.LightningModule):
     @torch.no_grad()
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self.model(x)
+        y_hat = self.model(x)[1]
         loss = self.loss_fn(y_hat, y)
         score = self.metric_fn(y_hat, y)
 
