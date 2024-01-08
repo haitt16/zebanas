@@ -58,11 +58,12 @@ class NetworkModule(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        optim = torch.optim.AdamW(
-            self.parameters(),
-            lr=0.0003,
+        optim = torch.optim.SGD(
+            self.model.parameters(),
+            lr=0.1,
             weight_decay=0.005,
-            betas=[0.9, 0.995],
+            momentum=0.9,
+            nesterov=True
         )
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optim,
