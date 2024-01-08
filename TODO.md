@@ -4,12 +4,12 @@
 - [x] Latency estimate CIFAR
 - [x] Run GA CIFAR
 - [x] Latency estimate ImageNet16-120
-- [ ] Run GA ImageNet16-120
+- [x] Run GA ImageNet16-120
 ## CPU
 - [x] Latency estimate CIFAR
-- [ ] Run GA CIFAR
+- [x] Run GA CIFAR
 - [x] Latency estimate ImageNet16-120
-- [ ] Run GA ImageNet16-120
+- [x] Run GA ImageNet16-120
 
 # Train
 - [ ] GPU CIFAR10

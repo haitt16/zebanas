@@ -1,0 +1,61 @@
+
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/callbacks/model_checkpoint.py:639: Checkpoint directory /home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+  | Name    | Type                  | Params
+--------------------------------------------------
+0 | model   | Gecco2024Network      | 1.7 M
+1 | ema     | ModelEmaV2            | 1.7 M
+2 | loss_fn | CrossEntropyCriterion | 0
+--------------------------------------------------
+3.4 M     Trainable params
+0         Non-trainable params
+3.4 M     Total params
+13.716    Total estimated model params size (MB)
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:441: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=11` in the `DataLoader` to improve performance.
+Sanity Checking DataLoader 0:   0%|                                                                                                                              | 0/2 [00:00<?, ?it/s]
+
+Epoch 0:   1%|█▍                                                                                                                         | 17/1485 [00:02<03:45,  6.52it/s, v_num=stth]
+Validation DataLoader 0:  30%|████████████████████████████████████▊                                                                                    | 24/79 [00:00<00:01, 35.95it/s]
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/home/haitt/workspaces/codes/nas/zebanas/train.py", line 26, in main
+    trainer.fit(model, datamodule)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/trainer.py", line 544, in fit
+    call._call_and_handle_interrupt(
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/call.py", line 44, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/trainer.py", line 580, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/trainer.py", line 989, in _run
+    results = self._run_stage()
+              ^^^^^^^^^^^^^^^^^
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/trainer.py", line 1035, in _run_stage
+    self.fit_loop.run()
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/fit_loop.py", line 202, in run
+    self.advance()
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/fit_loop.py", line 359, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/training_epoch_loop.py", line 137, in run
+    self.on_advance_end(data_fetcher)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/training_epoch_loop.py", line 285, in on_advance_end
+    self.val_loop.run()
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/utilities.py", line 182, in _decorator
+    return loop_run(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/evaluation_loop.py", line 141, in run
+    return self.on_run_end()
+           ^^^^^^^^^^^^^^^^^
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/evaluation_loop.py", line 267, in on_run_end
+    self._on_evaluation_end()
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/loops/evaluation_loop.py", line 308, in _on_evaluation_end
+    call._call_callback_hooks(trainer, hook_name, *args, **kwargs)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/call.py", line 208, in _call_callback_hooks
+    fn(trainer, trainer.lightning_module, *args, **kwargs)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/callbacks/model_checkpoint.py", line 321, in on_validation_end
+    self._save_topk_checkpoint(trainer, monitor_candidates)
+  File "/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/callbacks/model_checkpoint.py", line 368, in _save_topk_checkpoint
+    raise MisconfigurationException(m)
+lightning.fabric.utilities.exceptions.MisconfigurationException: `ModelCheckpoint(monitor='test_loss')` could not find the monitored key in the returned metrics: ['lr-AdamW', 'train_loss', 'train_score', 'valid_loss', 'val_score', 'epoch', 'step']. HINT: Did you call `log('test_loss', value)` in the `LightningModule`?
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

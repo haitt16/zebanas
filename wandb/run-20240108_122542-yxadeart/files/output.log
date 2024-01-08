@@ -1,0 +1,79 @@
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/callbacks/model_checkpoint.py:639: Checkpoint directory /home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+  | Name    | Type                  | Params
+--------------------------------------------------
+0 | model   | Gecco2024Network      | 1.7 M
+1 | loss_fn | CrossEntropyCriterion | 0
+--------------------------------------------------
+1.7 M     Trainable params
+0         Non-trainable params
+1.7 M     Total params
+6.858     Total estimated model params size (MB)
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:441: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=11` in the `DataLoader` to improve performance.
+/home/haitt/mambaforge/envs/nas/lib/python3.11/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:441: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=11` in the `DataLoader` to improve performance.
+
+Epoch 0:   3%|███▌                                                                                                                        | 17/594 [00:04<02:44,  3.52it/s, v_num=eart]
+
+
+
+Epoch 0:   6%|███████                                                                                                                     | 34/594 [00:12<03:18,  2.83it/s, v_num=eart]
+
+
+
+Epoch 0:   9%|██████████▋                                                                                                                 | 51/594 [00:19<03:25,  2.64it/s, v_num=eart]
+
+
+Epoch 0:  11%|██████████████▏                                                                                                             | 68/594 [00:26<03:27,  2.54it/s, v_num=eart]
+
+
+
+
+Epoch 0:  14%|█████████████████▋                                                                                                          | 85/594 [00:35<03:34,  2.38it/s, v_num=eart]
+
+
+
+Epoch 0:  17%|█████████████████████                                                                                                      | 102/594 [00:43<03:28,  2.36it/s, v_num=eart]
+
+
+
+Epoch 0:  20%|████████████████████████▋                                                                                                  | 119/594 [00:52<03:28,  2.28it/s, v_num=eart]
+
+
+
+
+Epoch 0:  23%|████████████████████████████▏                                                                                              | 136/594 [01:01<03:26,  2.22it/s, v_num=eart]
+
+
+
+Epoch 0:  26%|███████████████████████████████▋                                                                                           | 153/594 [01:10<03:23,  2.17it/s, v_num=eart]
+
+
+
+
+Epoch 0:  29%|███████████████████████████████████▏                                                                                       | 170/594 [01:19<03:19,  2.13it/s, v_num=eart]
+
+
+
+
+Epoch 0:  31%|██████████████████████████████████████▋                                                                                    | 187/594 [01:29<03:14,  2.09it/s, v_num=eart]
+
+
+
+Epoch 0:  34%|██████████████████████████████████████████▏                                                                                | 204/594 [01:38<03:08,  2.07it/s, v_num=eart]
+
+
+
+
+Epoch 0:  37%|█████████████████████████████████████████████▊                                                                             | 221/594 [01:47<03:02,  2.05it/s, v_num=eart]
+
+
+
+Epoch 0:  40%|█████████████████████████████████████████████████▎                                                                         | 238/594 [01:57<02:55,  2.03it/s, v_num=eart]
+
+
+
+
+Epoch 0:  43%|████████████████████████████████████████████████████▊                                                                      | 255/594 [02:06<02:48,  2.02it/s, v_num=eart]
+Validation DataLoader 0:  28%|██████████████████████████████████▎                                                                                       | 9/32 [00:00<00:02, 11.11it/s]
+
+Validation DataLoader 0:  56%|████████████████████████████████████████████████████████████████████                                                     | 18/32 [00:01<00:01, 10.26it/s]

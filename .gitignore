@@ -6,3 +6,4 @@ outputs
 **__pycache__**
 # scripts
 database
+zebanas/checkpoints/cifar10
