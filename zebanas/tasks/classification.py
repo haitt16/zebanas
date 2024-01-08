@@ -61,7 +61,7 @@ class NetworkModule(pl.LightningModule):
         optim = torch.optim.SGD(
             self.model.parameters(),
             lr=0.1,
-            weight_decay=0.005,
+            weight_decay=0.0005,
             momentum=0.9,
             nesterov=True
         )
