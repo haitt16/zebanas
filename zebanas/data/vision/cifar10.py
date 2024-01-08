@@ -56,7 +56,7 @@ class DataLoaderforSearchGetter:
             transform=self.transforms(),
             download=True
         )
-        return DatasetCifar10(dset, num_classes=10)
+        return DatasetCifar10(dset)
         # return dset
 
     def load(self):

@@ -1,33 +1,27 @@
 from tqdm import tqdm
-from ..spaces.model import Network
+from ..spaces.model import Network, Gecco2024Network
 
 
 class ParamsCounter:
-    def count_params(self, model):
+    def __init__(self, bound):
+        self.bound = bound
+
+    def get(self, cfg, sample):
+        chromos = sample.data
+        model = Gecco2024Network(
+            chromos,
+            cfg.network_channels,
+            cfg.strides,
+            cfg.dropout,
+            cfg.num_classes,
+            cfg.last_channels,
+        )
         return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    def __call__(
-        self,
-        cfg,
-        samples,
-        chromosomes,
-        search_index
-    ):
+    def __call__(self, cfg, population):
         params_list = []
 
-        model_hparams = cfg.model
-
-        for chromo in samples:
-            chromosomes[search_index] = chromo
-            model = Network(
-                chromosomes,
-                model_hparams.network_channels,
-                model_hparams.strides,
-                model_hparams.dropout,
-                model_hparams.num_classes,
-                model_hparams.last_channels,
-            )
-
-            params = self.count_params(model)
+        for chromo in population:
+            params = self.get(cfg, chromo)
             params_list.append(params)
         return params_list

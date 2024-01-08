@@ -153,6 +153,7 @@ class NSGA2_Network:
         selection,
         score_evaluator,
         latency_evaluator,
+        params_evaluator,
         crossover,
         mutation,
         survivor,
@@ -162,6 +163,7 @@ class NSGA2_Network:
         self.pop_size = pop_size
         self.score_evaluator = score_evaluator
         self.latency_evaluator = latency_evaluator
+        self.params_evaluator = params_evaluator
         self.selection = selection
         self.crossover = crossover
         self.mutation = mutation
@@ -173,7 +175,6 @@ class NSGA2_Network:
 
     def high_latency_eliminate(self, cfg, population, eps=7e-3):
         new_population = []
-
         for chromo in population:
             latency = self.latency_evaluator(cfg, [chromo])
             if latency[0] <= self.latency_evaluator.bound + eps:
@@ -225,6 +226,7 @@ class NSGA2_Network:
             _off = unique_populations(_off)
             _off = eliminate_duplicates(_off, [population, off])
             _off = self.high_latency_eliminate(cfg, _off)
+            _off = self.low_paramters_eliminate(cfg, _off)
 
             if len(_off) % 2 != 0:
                 n = 2 * (len(_off) // 2)
@@ -257,6 +259,7 @@ class NSGA2_Network:
             pop = unique_populations(pop)
             pop = eliminate_duplicates(pop, [population])
             pop = self.high_latency_eliminate(cfg, pop)
+            
 
             if len(pop) % 2 != 0:
                 n = 2 * (len(pop) // 2)
@@ -353,6 +356,7 @@ class GA_Network:
         selection,
         score_evaluator,
         latency_evaluator,
+        params_evaluator,
         crossover,
         mutation,
         survivor,
@@ -362,6 +366,7 @@ class GA_Network:
         self.pop_size = pop_size
         self.score_evaluator = score_evaluator
         self.latency_evaluator = latency_evaluator
+        self.params_evaluator = params_evaluator
         self.selection = selection
         self.crossover = crossover
         self.mutation = mutation
@@ -378,6 +383,16 @@ class GA_Network:
         for chromo in population:
             latency = self.latency_evaluator(cfg, [chromo])
             if latency[0] <= self.latency_evaluator.bound + eps:
+                new_population.append(chromo)
+
+        new_population = Population.create(new_population)
+        return new_population
+
+    def low_paramters_eliminate(self, cfg, population):
+        new_population = []
+        for chromo in population:
+            params = self.params_evaluator(cfg, [chromo])
+            if params[0] > self.params_evaluator.bound:
                 new_population.append(chromo)
 
         new_population = Population.create(new_population)
@@ -425,6 +440,7 @@ class GA_Network:
             _off = unique_populations(_off)
             _off = eliminate_duplicates(_off, [population, off])
             _off = self.high_latency_eliminate(cfg, _off)
+            _off = self.low_paramters_eliminate(cfg, _off)
 
             if len(_off) % 2 != 0:
                 n = 2 * (len(_off) // 2)
@@ -460,6 +476,7 @@ class GA_Network:
             pop = unique_populations(pop)
             pop = eliminate_duplicates(pop, [population])
             pop = self.high_latency_eliminate(cfg, pop)
+            pop = self.low_paramters_eliminate(cfg, pop)
 
             if len(population) + len(pop) > self.pop_size:
                 n_remain = self.pop_size - len(population)

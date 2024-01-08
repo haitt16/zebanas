@@ -129,10 +129,12 @@ class ZicoProxyV2:
     def __init__(
         self,
         loss_fn,
-        repetitions
+        repetitions,
+        # verbose=False
     ):
         self.loss_fn = loss_fn
         self.repetitions = repetitions
+        # self.verbose = verbose
 
     def get_grad(self, grad_dict, model):
         for name, module in model.named_modules():

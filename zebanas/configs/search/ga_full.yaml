@@ -11,7 +11,7 @@ model:
   chromos: null
   network_channels: [16, 24, 48, 80, 128, 192]
   strides: [1, 1, 2, 1, 2, 1]
-  dropout: 0.1
+  dropout: 0.2
   num_classes: 10
   last_channels: 1280
 
@@ -38,12 +38,16 @@ searcher:
       repetitions: 1
       loss_fn:
         _target_: zebanas.criterions.ce.CrossEntropyCriterion
+        num_classes: 10
     
     latency_evaluator:
       _target_: zebanas.evaluators.latency.NetworkLatencyEstimator
-      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/latency_c10_cpu.pth"
-      bound: 50.
+      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/latency_c10_gpu.pth"
+      bound: 4.
 
+    params_evaluator:
+      _target_: zebanas.evaluators.params.ParamsCounter
+      bound: 4_000_000
     mutation:
       _target_: zebanas.genetic.mutations.Gecco2024Mutation
       max_layers: 6

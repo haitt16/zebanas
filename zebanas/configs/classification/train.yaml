@@ -30,7 +30,7 @@ module:
     - [2, 6, 4, 4, 3, 3, 6, 3]
     - [2, 6, 3, 3, 6, 4, 4, 3]
     - [2, 6, 4, 3, 3, 3, 3, 3]
-    network_channels: [16, 24, 48, 80, 128, 192]
+    network_channels: [32, 16, 2, 80, 128, 192]
     strides: [1, 1, 2, 1, 2, 1]
     dropout: 0.1
     num_classes: 10
