@@ -123,12 +123,15 @@ class CIFAR10LightningModule(LightningDataModule):
         CIFAR10(self.data_dir, train=False, download=True)
 
     def setup(self, stage: str):
-        transform = self.get_transforms(stage)
+        
         if stage == "fit":
-            dataset = CIFAR10(self.data_dir, train=True, transform=transform)
-            self.train_set, self.val_set = random_split(
-                dataset, [0.95, 0.05],
-                generator=torch.Generator().manual_seed(42)
+            transform = self.get_transforms("fit")
+            self.train_set = CIFAR10(
+                self.data_dir, train=True, transform=transform
+            )
+            transform = self.get_transforms("test")
+            self.val_set = CIFAR10(
+                self.data_dir, train=False, transform=transform
             )
         elif stage == "test":
             self.test_set = CIFAR10(
