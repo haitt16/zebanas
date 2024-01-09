@@ -7,3 +7,4 @@ outputs
 # scripts
 database
 zebanas/checkpoints/cifar10
+wandb

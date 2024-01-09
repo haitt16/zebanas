@@ -1,5 +1,5 @@
-import torch
-from torch.utils.data import Dataset, DataLoader, random_split
+# import torch
+from torch.utils.data import Dataset, DataLoader
 # import torchvision
 import torchvision.transforms as T
 from torchvision.datasets import CIFAR10
@@ -12,7 +12,7 @@ class DatasetCifar10(Dataset):
 
     def __getitem__(self, index):
         x, y = self.dset[index]
-        return x, y
+        return (x, x), y
 
     def __len__(self):
         return len(self.dset)
@@ -123,7 +123,7 @@ class CIFAR10LightningModule(LightningDataModule):
         CIFAR10(self.data_dir, train=False, download=True)
 
     def setup(self, stage: str):
-        
+
         if stage == "fit":
             transform = self.get_transforms("fit")
             self.train_set = CIFAR10(
@@ -142,7 +142,7 @@ class CIFAR10LightningModule(LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(
-            self.train_set,
+            DatasetCifar10(self.train_set),
             self.batch_size,
             shuffle=True,
             pin_memory=True
@@ -150,7 +150,7 @@ class CIFAR10LightningModule(LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(
-            self.val_set,
+            DatasetCifar10(self.val_set),
             self.batch_size,
             shuffle=False,
             pin_memory=True

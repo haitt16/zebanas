@@ -26,9 +26,9 @@ def main(cfg):
     )
 
     datamodule = instantiate(cfg.data)
-    # model = instantiate(cfg.module)
-    model = efficientnet_b0(num_classes=10)
-    model = instantiate(cfg.module, model=model)
+    model = instantiate(cfg.module)
+    # model = efficientnet_b0(num_classes=10)
+    # model = instantiate(cfg.module, model=model)
 
     trainer.fit(model, datamodule)
 

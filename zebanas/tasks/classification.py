@@ -4,13 +4,21 @@ import lightning.pytorch as pl
 # from hydra.utils import instantiate
 
 
+class kNNPredictor:
+    def __init__(self, k=32, alpha=0.7):
+        self.k = k
+
+    def __call__(self):
+        return
+
+
 class NetworkModule(pl.LightningModule):
     def __init__(
         self,
         model,
         loss_fn,
         metric_fn,
-        # predictor
+        predictor=kNNPredictor()
     ):
         super().__init__()
         self.model = model
@@ -20,31 +28,37 @@ class NetworkModule(pl.LightningModule):
         # )
         self.loss_fn = loss_fn
         self.metric_fn = metric_fn
-        # self.predictor = predictor
+        self.predictor = predictor
 
     def forward(self, x):
         return self.model(x)
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self.model(x)
-        loss = self.loss_fn(y_hat, y)
+        xs, y = batch
+        x = torch.cat(xs)
+        y_hat, emb = self.model(x)
+        loss = self.loss_fn(emb, y_hat, y)
         score = self.metric_fn(y_hat, y)
 
-        self.log("train_loss", loss, sync_dist=True)
+        self.log("train_loss", loss["loss"], sync_dist=True)
+        self.log("train_scl", loss["scl"], sync_dist=True)
+        self.log("train_ce", loss["ce"], sync_dist=True)
         self.log("train_score", score, sync_dist=True)
-        return loss
+        return loss["loss"]
 
     @torch.no_grad()
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self.model(x)
-        loss = self.loss_fn(y_hat, y)
+        xs, y = batch
+        x = torch.cat(xs)
+        y_hat, emb = self.model(x)
+        loss = self.loss_fn(emb, y_hat, y)
         score = self.metric_fn(y_hat, y)
 
-        self.log("valid_loss", loss, sync_dist=True)
+        self.log("val_loss", loss["loss"], sync_dist=True)
+        self.log("val_scl", loss["scl"], sync_dist=True)
+        self.log("val_ce", loss["ce"], sync_dist=True)
         self.log("val_score", score, sync_dist=True)
-        return loss
+        return loss["loss"]
 
     @torch.no_grad()
     def test_step(self, batch, batch_idx):
