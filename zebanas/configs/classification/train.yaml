@@ -28,8 +28,8 @@ module:
     chromos:
     - [6, 6, 4, 4, 4, 3, 3, 3]
     - [6, 6, 4, 6, 4, 4, 4, 3]
-    - [6, 5, 3, 3, 3, 3, 3, 3]
     - [3, 6, 3, 3, 6, 3, 3, 3]
+    - [6, 5, 3, 3, 3, 3, 3, 3]
     - [5, 6, 4, 4, 4, 3, 6, 3]
     network_channels: [16, 24, 48, 80, 128, 192]
     strides: [1, 1, 2, 1, 2, 1]
@@ -37,7 +37,7 @@ module:
     num_classes: 10
     last_channels: 1280
   loss_fn:
-    _target_: zebanas.criterions.MultitaskLossFunction
+    _target_: zebanas.criterions.ce.MultitaskLossFunction
     num_classes: 10
   
   metric_fn:
@@ -46,7 +46,7 @@ module:
 data:
   _target_: zebanas.data.vision.cifar10.CIFAR10LightningModule
   data_dir: "/home/haitt/workspaces/data/vision/cifar10"
-  batch_size: 40
+  batch_size: 64
   image_size: 32
   crop_size: 32
 

@@ -22,10 +22,6 @@ class NetworkModule(pl.LightningModule):
     ):
         super().__init__()
         self.model = model
-        # self.ema = ModelEmaV2(
-        #     self.model,
-        #     decay=0.995
-        # )
         self.loss_fn = loss_fn
         self.metric_fn = metric_fn
         self.predictor = predictor
