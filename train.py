@@ -4,6 +4,7 @@ from lightning.pytorch.trainer.trainer import Trainer
 import lightning.pytorch as pl
 import hydra
 from hydra.utils import instantiate
+from torchvision.models import efficientnet_b0
 
 # from nats_bench import create
 # from xautodl.models import get_cell_based_tiny_net
@@ -25,7 +26,9 @@ def main(cfg):
     )
 
     datamodule = instantiate(cfg.data)
-    model = instantiate(cfg.module)
+    # model = instantiate(cfg.module)
+    model = efficientnet_b0(num_classes=10)
+    model = instantiate(cfg.module, model=model)
 
     trainer.fit(model, datamodule)
 
