@@ -68,7 +68,7 @@ class NetworkModule(pl.LightningModule):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optim,
             eta_min=0.,
-            T_max=200
+            T_max=81
         )
         return {"optimizer": optim, "lr_scheduler": scheduler}
 
