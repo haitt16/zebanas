@@ -132,3 +132,51 @@ class LayerNorm(nn.Module):
             x = (x - u) / torch.sqrt(s + self.eps)
             x = self.weight[:, None, None] * x + self.bias[:, None, None]
             return x
+
+
+class ResNetBlock(nn.Module):
+    def __init__(self, in_chn, out_chn, stride):
+        super().__init__()
+        self.conv1 = Conv2dNormActivation(
+            in_chn, out_chn,
+            3, stride,
+            1, 1,
+            nn.BatchNorm2d,
+            nn.ReLU
+        )
+
+        self.conv2 = Conv2dNormActivation(
+            out_chn, out_chn,
+            3, 1, 1, 1,
+            nn.BatchNorm2d,
+            nn.ReLU
+        )
+
+        if stride > 1:
+            self.downsample = nn.Sequential(
+                nn.AvgPool2d(kernel_size=2, stride=2, padding=0),
+                nn.Conv2d(
+                    in_chn, out_chn,
+                    kernel_size=1, stride=1,
+                    padding=0, bias=False
+                ),
+            )
+        elif in_chn != out_chn:
+            self.downsample = Conv2dNormActivation(
+                in_chn, out_chn,
+                3, 1, 1, 1,
+                nn.BatchNorm2d,
+                nn.ReLU
+            )
+        else:
+            self.downsample = None
+
+    def forward(self, x):
+        o = self.conv1(x)
+        o = self.conv2(o)
+
+        if self.downsample is not None:
+            res = self.downsample(x)
+        else:
+            res = x
+        return o + res

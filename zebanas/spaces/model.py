@@ -2,7 +2,7 @@ import math
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+# import torch.nn.functional as F
 from torchvision.ops.misc import Conv2dNormActivation
 
 from .modules import Cell, Gecco2024Cell
@@ -126,11 +126,6 @@ class Gecco2024Network(nn.Module):
             )
 
         self.avgpool = nn.AdaptiveAvgPool2d(1)
-
-        self.embedding = nn.Sequential(
-            nn.Dropout(p=dropout),
-            nn.Linear(last_channels, 128),
-        )
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout, inplace=True),
             nn.Linear(last_channels, num_classes),
@@ -155,8 +150,6 @@ class Gecco2024Network(nn.Module):
         x = self.conv(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        e = self.embedding(x)
-        e = F.normalize(e, dim=1)
         x = self.classifier(x)
 
-        return x, e
+        return x

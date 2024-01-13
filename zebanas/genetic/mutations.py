@@ -96,7 +96,7 @@ class Gecco2024Mutation:
             return samples
 
         size = len(samples)
-        op = np.random.randint(4, size=size)
+        op = np.random.randint(5, size=size)
 
         # assert len(samples.shape) == 2, str(samples)
 
@@ -131,11 +131,24 @@ class Gecco2024Mutation:
 
         x = np.random.random(size) < self.p
         x = np.where(x)[0]
-        y = np.random.randint(ncells, size=len(x))
+
+        xc = np.random.random(len(x)) < 0.2
+        xb = ~xc
+        xc = np.where(xc)[0]
+        xc = x[xc]
+        xb = np.where(xb)[0]
+        xb = x[xb]
+
+        y = np.random.randint(ncells, size=len(xb))
 
         samples = self.mutate(
-            np.squeeze(offspring[x, y])
+            np.squeeze(offspring[xb, y])
         )
-        offspring[x, y] = samples
+        offspring[xb, y] = samples
+
+        y = np.random.randint(ncells, size=(2, len(xc)))
+        tmp = offspring[xc, y[0]].copy()
+        offspring[xc, y[0]] = offspring[xc, y[1]].copy()
+        offspring[xc, y[1]] = tmp.copy()
 
         return Population.new(offspring.tolist())

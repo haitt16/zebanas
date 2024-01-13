@@ -1,11 +1,12 @@
 import torch
 import torch.nn as nn
-# from torchvision.ops.misc import Conv2dNormActivation, SqueezeExcitation
+from torchvision.ops.misc import Conv2dNormActivation
 
 from .layers import (
     LayerNorm,
     DepthwiseConv,
-    GhostModule
+    GhostModule,
+    ResNetBlock
 )
 
 from .operations import (
@@ -179,11 +180,60 @@ class ConvNeXtOperation(nn.Module):
             return x
 
 
+class NATSBenchOperation(nn.Module):
+    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride):
+        super().__init__()
+        if stride > 1 or in_chn != out_chn:
+            self.reduce = ResNetBlock(in_chn, out_chn, stride)
+            self.down = True
+
+        else:
+            self.conv1 = Conv2dNormActivation(
+                in_chn, out_chn, 1, 1, 0, 1,
+                nn.BatchNorm2d, nn.ReLU
+            )
+            self.conv2 = Conv2dNormActivation(
+                in_chn, out_chn,
+                kernel_size=kernel_size,
+                stride=1,
+                padding=(kernel_size-1)//2,
+                norm_layer=nn.BatchNorm2d,
+                activation_layer=nn.ReLU
+            )
+            self.conv3 = Conv2dNormActivation(
+                in_chn, out_chn,
+                kernel_size=kernel_size,
+                stride=1,
+                padding=(kernel_size-1)//2,
+                norm_layer=nn.BatchNorm2d,
+                activation_layer=nn.ReLU
+            )
+            self.conv4 = Conv2dNormActivation(
+                in_chn, out_chn,
+                kernel_size=kernel_size,
+                stride=1,
+                padding=(kernel_size-1)//2,
+                norm_layer=nn.BatchNorm2d,
+                activation_layer=nn.ReLU
+            )
+            self.down = False
+
+    def forward(self, x):
+        if self.down:
+            o = self.reduce(x)
+            return o
+        else:
+            o1 = self.conv1(x)
+            o2 = self.conv2(x) + o1
+            o3 = x + self.conv3(o1) + self.conv4(o2)
+            return o3
+
+
 OPERATIONS_CLASSES = [
     # op_class, k
-    (GhostOperationV2, 3),
-    (GhostOperationV2, 5),
-    (GhostOperationV2, 7),
+    # (GhostOperationV2, 3),
+    # (GhostOperationV2, 5),
+    # (GhostOperationV2, 7),
     (DepthwiseOperationV2, 3),
     (DepthwiseOperationV2, 5),
     (DepthwiseOperationV2, 7),
@@ -193,6 +243,9 @@ OPERATIONS_CLASSES = [
     (ConvNeXtOperation, 3),
     (ConvNeXtOperation, 5),
     (ConvNeXtOperation, 7),
+    (NATSBenchOperation, 3),
+    (NATSBenchOperation, 5),
+    (NATSBenchOperation, 7)
 ]
 
 

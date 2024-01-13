@@ -1,5 +1,4 @@
 import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 from torch import nn
 import numpy as np
@@ -47,7 +46,7 @@ def getzico(network, trainloader, lossfunc):
         data,label = batch[0],batch[1]
         data,label=data.cuda(),label.cuda()
 
-        logits = network(data)
+        logits = network(data)[1]
         loss = lossfunc(logits, label)
         loss.backward()
         grad_dict= getgrad(network, grad_dict,i)
@@ -60,25 +59,27 @@ if __name__ == "__main__":
     from zebanas.data.vision.cifar10 import DataLoaderforSearchGetter
     from zebanas.spaces.model import Network
     from zebanas.genetic.chromosome import Chromosome
+    from proxylessnas.proxyless_nas.model_zoo import proxyless_base
+
+    import xautodl
+    from xautodl.models import get_cell_based_tiny_net
+    from nats_bench import create
+    api = create("/home/haitt/workspaces/codes/nas-bench/NATS-Bench/api/NATS-tss-v1_0-3ffb9-simple", "tss", fast_mode=True)
+
+    config = api.get_net_config(15624, 'cifar10')
+    infor = api.get_more_info(15624, "cifar10", hp="200")
+    model = get_cell_based_tiny_net(config)
 
     data_getter = DataLoaderforSearchGetter(
         data_dir="/home/haitt/workspaces/data/vision/cifar10",
-        batch_size=2,
-        n_batches=2
+        batch_size=16,
+        n_batches=2,
+        image_size=32,
+        crop_size=32
     )
     dataloader = data_getter.load()
 
-    model = Network(
-        chromos=null
-        network_channels=[32, 16, 24, 40, 80, 112, 192, 360]
-        strides=[1, 2, 2, 2, 1, 2, 1]
-        dropout=0.2
-        num_classes=10
-        last_channels=1440
-        width_mult=1.0
-        depth_mult=1.0  
-    )
-
+    # model = proxyless_base(pretrained=False, net_config="https://raw.githubusercontent.com/han-cai/files/master/proxylessnas/proxyless_cifar.config")
     score = getzico(
         model,
         dataloader,

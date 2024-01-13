@@ -18,13 +18,13 @@ class NetworkModule(pl.LightningModule):
         model,
         loss_fn,
         metric_fn,
-        predictor=kNNPredictor()
+        # predictor=kNNPredictor()
     ):
         super().__init__()
         self.model = model
         self.loss_fn = loss_fn
         self.metric_fn = metric_fn
-        self.predictor = predictor
+        # self.predictor = predictor
 
     def forward(self, x):
         return self.model(x)
@@ -78,7 +78,7 @@ class NetworkModule(pl.LightningModule):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optim,
             eta_min=0.,
-            T_max=200
+            T_max=81
         )
         return {"optimizer": optim, "lr_scheduler": scheduler}
 

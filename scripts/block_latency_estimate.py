@@ -14,10 +14,10 @@ import subprocess
 torch.manual_seed(42)
 # torch.set_num_threads(1)
 
-NETWORKS_CHANNELS = [24, 48, 96, 160, 256, 360]
+NETWORKS_CHANNELS = [16, 24, 48, 80, 128, 192]
 STRIDES = [1, 1, 2, 1, 2, 1]
 
-INPUT_SIZE = 16
+INPUT_SIZE = 32
 EXPAND_RATIOS = [3, 4, 6]
 
 OPS_LOWER = [0]
@@ -41,7 +41,7 @@ for i in range(len(NETWORKS_CHANNELS[:-1])):
     stride = STRIDES[i+1]
 
     for expand_ratio in EXPAND_RATIOS:
-        for op_idx in range(12):
+        for op_idx in range(9, 12):
             for j in range(2):
                 if j > 0:
                     stride = 1
@@ -124,4 +124,4 @@ for id, model, input_shape in model_list:
     flush_cache(model, x)
     reset_clock_speed()
 
-torch.save(TABLES, "zebanas/checkpoints/latency/latency_imgn_gpu.pth")
+torch.save(TABLES, "zebanas/checkpoints/latency/latency_c10_new.pth")

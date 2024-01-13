@@ -12,7 +12,7 @@ class DatasetCifar10(Dataset):
 
     def __getitem__(self, index):
         x, y = self.dset[index]
-        return (x, x), y
+        return x, y
 
     def __len__(self):
         return len(self.dset)
@@ -134,6 +134,7 @@ class CIFAR10LightningModule(LightningDataModule):
                 self.data_dir, train=False, transform=transform
             )
         elif stage == "test":
+            transform = self.get_transforms("test")
             self.test_set = CIFAR10(
                 self.data_dir,
                 train=False,
@@ -142,7 +143,7 @@ class CIFAR10LightningModule(LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(
-            DatasetCifar10(self.train_set),
+            self.train_set,
             self.batch_size,
             shuffle=True,
             pin_memory=True
@@ -150,7 +151,7 @@ class CIFAR10LightningModule(LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(
-            DatasetCifar10(self.val_set),
+            self.val_set,
             self.batch_size,
             shuffle=False,
             pin_memory=True

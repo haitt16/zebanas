@@ -13,7 +13,7 @@ logger_name: "gecco2024"
 trainer:
   accelerator: "gpu"
   devices: [0]
-  max_epochs: 200
+  max_epochs: 162
   val_check_interval: 200
   num_sanity_val_steps: 2
   gradient_clip_val: 5.

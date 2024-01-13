@@ -20,12 +20,18 @@ from torchvision.models import (
     mobilenet_v3_large,
     mobilenet_v3_small,
 )
+from proxylessnas.proxyless_nas.model_zoo import proxyless_base
 from scripts.sotas.convnext import convnext_tiny
 from scripts.sotas.ghostnet import ghostnet
 from zebanas.evaluators.zico import ZicoProxyV2
 from zebanas.data.vision.cifar10 import DataLoaderforSearchGetter
 # from zebanas.genetic.chromosome import ChromosomeV2
-
+from xautodl.models import get_cell_based_tiny_net
+from nats_bench import create
+api = create("/home/haitt/workspaces/codes/nas-bench/NATS-Bench/api/NATS-tss-v1_0-3ffb9-simple", "tss", fast_mode=True)
+config = api.get_net_config(15624, 'cifar10')
+info = api.get_more_info(15624, "cifar10", hp="200")
+print(info)
 # torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
 torch.set_num_threads(1)
@@ -38,12 +44,14 @@ repetitions = 1_000
 TABLES = {}
 
 model_list = [
-    ("efficientnet_b0", efficientnet_b0(num_classes=10), 224),
+    # ("efficientnet_b0", efficientnet_b0(num_classes=10), 224),
     # ("efficientnet_b1", efficientnet_b1(num_classes=10), 240),
     # ("efficientnet_b2", efficientnet_b2(num_classes=10), 288),
     # ("efficientnet_b3", efficientnet_b3(num_classes=10), 300),
-    ("resnet18", resnet18(num_classes=10), 224),
-    ("resnet34", resnet34(num_classes=10), 224),
+    # ("resnet18", resnet18(num_classes=10), 224),
+    # ("resnet34", resnet34(num_classes=10), 224),
+    ("proxyless_cifar", proxyless_base(pretrained=False, net_config="https://raw.githubusercontent.com/han-cai/files/master/proxylessnas/proxyless_cifar.config"), 32),
+    ("best_nb", get_cell_based_tiny_net(config), 32)
     # ("resnet50", resnet50(num_classes=10), 224),
     # ("resnet101", resnet101(num_classes=10), 224),
     # ("mobilenet_v2", mobilenet_v2(num_classes=10), 224),
