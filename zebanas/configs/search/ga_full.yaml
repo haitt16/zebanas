@@ -67,7 +67,7 @@ searcher:
 data:
   _target_: zebanas.data.vision.cifar10.DataLoaderforSearchGetter
   data_dir: "/home/haitt/workspaces/data/vision/cifar10"
-  batch_size: 64
+  batch_size: 128
   image_size: 32
   crop_size: 32
   n_batches: 2

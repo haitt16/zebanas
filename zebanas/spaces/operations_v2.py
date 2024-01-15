@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision.ops.misc import Conv2dNormActivation
-
+from torchvision.ops import StochasticDepth
 from .layers import (
     LayerNorm,
     DepthwiseConv,
@@ -19,7 +19,7 @@ from .utils import _adjust_channels
 
 
 class DepthwiseOperationV2(nn.Module):
-    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride):
+    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride, sd_prob):
         super().__init__()
 
         mid_chn = _adjust_channels(in_chn, expand_ratio)
@@ -31,6 +31,7 @@ class DepthwiseOperationV2(nn.Module):
             1,
             expand_ratio
         )
+        self.stochastic_depth = StochasticDepth(sd_prob, "row")
 
         self.use_res = in_chn == out_chn and stride == 1
 
@@ -39,6 +40,7 @@ class DepthwiseOperationV2(nn.Module):
         o = self.conv2(o)
 
         if self.use_res:
+            o = self.stochastic_depth(o)
             o = x + o
 
         return o
@@ -254,14 +256,15 @@ class OperationPoolV2:
         self,
         expand_ratio,
         in_chn, out_chn,
-        stride, index
+        stride, index, sd_prob
     ):
         op_class, k = OPERATIONS_CLASSES[index]
 
         self.op = op_class(
             expand_ratio,
             in_chn, out_chn,
-            k, stride
+            k, stride,
+            sd_prob
         )
 
     def __call__(self):
