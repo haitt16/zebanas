@@ -102,24 +102,21 @@ class Gecco2024Network(nn.Module):
         )
 
         cells = []
-        total_blocks = sum(c[1] for c in chromos)
-        start_block_id = 0
+        # start_block_id = 0
         for i in range(len(network_channels[:-1])):
             chromo = chromos[i]
             in_channels = network_channels[i]
             out_channels = network_channels[i+1]
             stride = strides[i+1]
-            sd_probs = [0.2*(start_block_id + i)/total_blocks for i in range(chromo[1])]
             cells.append(
                 Gecco2024Cell(
                     chromo,
                     in_channels,
                     out_channels,
                     stride,
-                    sd_probs
                 )
             )
-            start_block_id += chromo[1]
+            # start_block_id += chromo[1]
         self.features = nn.Sequential(*cells)
         self.conv = Conv2dNormActivation(
                 network_channels[-1],

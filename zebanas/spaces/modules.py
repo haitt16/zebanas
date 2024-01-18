@@ -100,7 +100,7 @@ class Gecco2024Cell(nn.Module):
         in_chn,
         out_chn,
         stride,
-        sd_probs
+        # sd_probs
     ):
         super().__init__()
         op_idx = chromo[0]
@@ -116,7 +116,7 @@ class Gecco2024Cell(nn.Module):
             block = OperationPoolV2(
                 expand_ratios[i],
                 in_chn, out_chn,
-                stride, op_idx, sd_probs[i]
+                stride, op_idx
             )()
 
             block_list.append(block)
