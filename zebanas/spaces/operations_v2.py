@@ -233,9 +233,9 @@ class NATSBenchOperation(nn.Module):
 
 OPERATIONS_CLASSES = [
     # op_class, k
-    # (GhostOperationV2, 3),
-    # (GhostOperationV2, 5),
-    # (GhostOperationV2, 7),
+    (GhostOperationV2, 3),
+    (GhostOperationV2, 5),
+    (GhostOperationV2, 7),
     (DepthwiseOperationV2, 3),
     (DepthwiseOperationV2, 5),
     (DepthwiseOperationV2, 7),
@@ -245,9 +245,9 @@ OPERATIONS_CLASSES = [
     (ConvNeXtOperation, 3),
     (ConvNeXtOperation, 5),
     (ConvNeXtOperation, 7),
-    (NATSBenchOperation, 3),
-    (NATSBenchOperation, 5),
-    (NATSBenchOperation, 7)
+    # (NATSBenchOperation, 3),
+    # (NATSBenchOperation, 5),
+    # (NATSBenchOperation, 7)
 ]
 
 
