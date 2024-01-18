@@ -47,7 +47,7 @@ class DepthwiseOperationV2(nn.Module):
 
 
 class ConvolutionOperationV2(nn.Module):
-    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride):
+    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride, sd_prob):
         super().__init__()
         mid_chn = _adjust_channels(in_chn, expand_ratio)
 
@@ -58,6 +58,8 @@ class ConvolutionOperationV2(nn.Module):
             1,
             expand_ratio
         )
+
+        self.stochastic_depth = StochasticDepth(sd_prob, "row")
         self.use_res = in_chn == out_chn and stride == 1
 
     def forward(self, x):
@@ -65,13 +67,14 @@ class ConvolutionOperationV2(nn.Module):
         o = self.conv2(o)
 
         if self.use_res:
+            o = self.stochastic_depth(o)
             o = o + x
 
         return o
 
 
 class GhostOperationV2(nn.Module):
-    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride):
+    def __init__(self, expand_ratio, in_chn, out_chn, kernel_size, stride, sd_prob):
         super().__init__()
         mid_chn = _adjust_channels(in_chn, expand_ratio)
         self.stride = stride
@@ -102,6 +105,7 @@ class GhostOperationV2(nn.Module):
                 ),
                 nn.BatchNorm2d(out_chn)
             )
+        self.stochastic_depth = StochasticDepth(sd_prob, "row")
 
     def forward(self, x):
         o = self.conv1(x)
@@ -111,7 +115,8 @@ class GhostOperationV2(nn.Module):
 
         if self.use_shortcut:
             x = self.shortcut(x)
-
+        
+        o = self.stochastic_depth(o)
         o = o + x
         return o
 
