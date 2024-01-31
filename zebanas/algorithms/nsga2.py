@@ -468,9 +468,7 @@ class GA_Network:
         population = []
         first = False
         while len(population) < self.pop_size:
-            if first:
-                population = population[1:]
-                first = False
+            
             if len(population) == 0:
                 population = self.sampler(1)
                 first = True
@@ -487,6 +485,9 @@ class GA_Network:
                 pop = pop[:n_remain]
 
             population = Population.merge([population, pop])
+            if first:
+                population = population[1:]
+                first = False
             print("[Population length in sampling]", len(population))
 
         for i in range(len(population)):
