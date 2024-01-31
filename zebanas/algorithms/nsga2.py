@@ -466,11 +466,14 @@ class GA_Network:
         dataloader,
     ):
         population = []
+        first = False
         while len(population) < self.pop_size:
-            if len(population) > 1:
+            if first:
                 population = population[1:]
+                first = False
             if len(population) == 0:
                 population = self.sampler(1)
+                first = True
                 continue
 
             pop = self.sampler(self.pop_size)
