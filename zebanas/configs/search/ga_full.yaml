@@ -27,7 +27,7 @@ searcher:
       n_cells: ${execute.n_cells}
       bound:
         lower: [0, 1]
-        upper: [11, 6]
+        upper: [8, 6]
       expand_choice: [3, 4, 6]
     
     selection:
@@ -42,16 +42,16 @@ searcher:
     
     latency_evaluator:
       _target_: zebanas.evaluators.latency.NetworkLatencyEstimator
-      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/c10_gpu.pth"
-      bound: 7.
+      path: "/home/haitt/workspaces/codes/nas/zebanas/zebanas/checkpoints/latency/latency_c10_gpu.pth"
+      bound: 2
 
     params_evaluator:
       _target_: zebanas.evaluators.params.ParamsCounter
-      bound: 4_000_000
+      bound: 0
     mutation:
       _target_: zebanas.genetic.mutations.Gecco2024Mutation
       max_layers: 6
-      bound: 12
+      bound: 9
       expand: ${searcher.algorithm.sampler.expand_choice}
       p: 0.8
     
