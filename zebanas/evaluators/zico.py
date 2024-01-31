@@ -203,7 +203,8 @@ class ZicoProxyV2:
 
     def __call__(self, cfg, population, dataloader, device):
         objs = []
-        for sample in population:
+        for sample in tqdm(population):
+            print("Evaluate")
             score = self.get(cfg, sample, dataloader, device)
             objs.append(score)
         torch.cuda.synchronize()

@@ -392,7 +392,7 @@ class GA_Network:
         new_population = []
         for chromo in population:
             params = self.params_evaluator(cfg, [chromo])
-            if params[0] > self.params_evaluator.bound:
+            if self.params_evaluator.bound + 1_000_000 > params[0] > self.params_evaluator.bound:
                 new_population.append(chromo)
 
         new_population = Population.create(new_population)
@@ -426,7 +426,6 @@ class GA_Network:
                 sample
             )
             obj_list.append([score, latency])
-
         return population.set_obj(obj_list)
 
     def mating(self, cfg, population, gen):
@@ -468,6 +467,8 @@ class GA_Network:
     ):
         population = []
         while len(population) < self.pop_size:
+            if len(population) > 1:
+                population = population[1:]
             if len(population) == 0:
                 population = self.sampler(1)
                 continue
@@ -488,6 +489,7 @@ class GA_Network:
         for i in range(len(population)):
             population[i].age = 0
 
+        print("Evaluate")
         population = self.evaluate(
             cfg=cfg,
             population=population,
@@ -555,13 +557,12 @@ class GA_Network:
             for c in population:
                 if c.obj[0] < min_score:
                     min_score = c.obj[0]
-                    min_solution = c.data
+                    min_solution = c
             if min_score < best_score:
                 best_score = min_score
                 best_solution = min_solution
             print("[Best score in history]", best_score)
-            print("[Best solution]\n", np.array(best_solution))
-
+            print("[Best solution]\n", np.array(best_solution.data))
             print(f"[Step {gen+1}]")
             population = self.step(
                 cfg=cfg,
